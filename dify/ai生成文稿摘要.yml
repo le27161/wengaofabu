@@ -1,0 +1,491 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: ai生成文稿摘要
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.19@1aa3c64e2f50179afe8410ad79412dab92bf5919a27da8e2b13071b5e5f8ce81
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: 1786846846750-source-1786847100265-target
+      source: '1786846846750'
+      sourceHandle: source
+      target: '1786847100265'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1786847100265-source-1786847540451-target
+      source: '1786847100265'
+      sourceHandle: source
+      target: '1786847540451'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 1786847540451-source-1786848033443-target
+      source: '1786847540451'
+      sourceHandle: source
+      target: '1786848033443'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 1786848033443-source-1786848808991-target
+      source: '1786848033443'
+      sourceHandle: source
+      target: '1786848808991'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 1786848808991-source-1786849009929-target
+      source: '1786848808991'
+      sourceHandle: source
+      target: '1786849009929'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1786849009929-source-1786847199787-target
+      selected: false
+      source: '1786849009929'
+      sourceHandle: source
+      target: '1786847199787'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: title
+          options: []
+          placeholder: ''
+          required: true
+          type: paragraph
+          variable: title
+        - default: ''
+          hint: ''
+          label: context
+          options: []
+          placeholder: ''
+          required: true
+          type: paragraph
+          variable: context
+      height: 134
+      id: '1786846846750'
+      position:
+        x: 80
+        y: 276.7219683569084
+      positionAbsolute:
+        x: 80
+        y: 276.7219683569084
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import re\ndef main(title: str, content: str):\n     # 基础清洗：去除多余空白、特殊字符\n\
+          \    cleaned = \" \".join(content.split())\n    word_count = len(cleaned)\n\
+          \    # 【新增】轻量级问句检测（只做正则匹配，不改变任何正文）\n    questions = re.findall(r'[^。；，,、！!？?]*[？?]',\
+          \ cleaned)\n    # 过滤掉过短或无效的问号片段\n    valid_questions = [q.strip() for q\
+          \ in questions if len(q) > 2 and q != '？' and q != '?']\n    question_count\
+          \ = len(valid_questions)\n    # 如果数量为0，则返回空字符串；如果大于0，则拼接成列表\n    question_list\
+          \ = \"\\n\".join([f\"{i+1}. {q}\" for i, q in enumerate(valid_questions)])\
+          \ if valid_questions else \"\"\n    # 简单提取数字、日期等（正则可在此做）\n    return {\n\
+          \         \"cleaned_content\": cleaned,   # 原封不动，供所有文章使用\n        \"word_count\"\
+          : word_count,\n        \"question_count\": question_count,  # 新增（没有问句时为0）\n\
+          \        \"question_list\": question_list     # 新增（没有问句时为空字符串）\n    }\n"
+        code_language: python3
+        outputs:
+          cleaned_content:
+            children: null
+            type: string
+          question_count:
+            children: null
+            type: number
+          question_list:
+            children: null
+            type: string
+          word_count:
+            children: null
+            type: number
+        selected: false
+        title: 代码执行
+        type: code
+        variables:
+        - value_selector:
+          - '1786846846750'
+          - title
+          value_type: string
+          variable: title
+        - value_selector:
+          - '1786846846750'
+          - context
+          value_type: string
+          variable: content
+      height: 51
+      id: '1786847100265'
+      position:
+        x: 469
+        y: 321
+      positionAbsolute:
+        x: 469
+        y: 321
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        outputs:
+        - value_selector:
+          - '1786849009929'
+          - text
+          value_type: string
+          variable: text
+        selected: false
+        title: 输出
+        type: end
+      height: 87
+      id: '1786847199787'
+      position:
+        x: 2775.923095432929
+        y: 500.2636723845185
+      positionAbsolute:
+        x: 2775.923095432929
+        y: 500.2636723845185
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: f403c338-63d5-4506-ab71-267e2a8bba16
+          role: system
+          text: "你是一名严谨的新闻事实核查员（Fact-Checker）。你的职责是从文章中提取所有可验证的事实性信息，绝不添加任何原文没有的内容。\n\
+            \n请从以下文章中提取：\n1. 所有明确的人名、地名、机构名\n2. 所有数字、日期、统计数据\n3. 所有因果关系陈述（因为...所以...）\n\
+            4. 文章的核心论点或结论\n（注意：如果系统检测到文章存在问句列表，会附在原文下方供参考。若没有，则忽略此项。）\n输出格式为严格的JSON,不要返回思考过程：\n\
+            {\n    \"entities\": {\"persons\": [], \"locations\": [], \"organizations\"\
+            : []},\n    \"numbers\": [],\n    \"dates\": [],\n    \"causal_statements\"\
+            : [],\n    \"core_claim\": \"\"\n}"
+        - id: e751e97a-68b7-4d7a-956c-89125c2618bd
+          role: user
+          text: '文章标题：{{#1786846846750.title#}}
+
+            文章正文：{{#1786847100265.cleaned_content#}}
+
+            【可选补充信息】如果本文存在明显的问句结构，则系统已提取如下：
+
+            {{#1786847100265.question_list#}}
+
+            （若该项为空，请忽略）
+
+            请仅基于以上原文内容提取事实，不要做任何推断或补充。'
+        reasoning_format: separated
+        selected: false
+        structured_output_enabled: true
+        title: 事实核验与关键实体抽取
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1786847540451'
+      position:
+        x: 1200.3719834893666
+        y: 347.41281502244505
+      positionAbsolute:
+        x: 1200.3719834893666
+        y: 347.41281502244505
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.3
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 87eb500f-58eb-48ef-b08c-92c2e3685a74
+          role: system
+          text: '你是一名顶级的书评人和综述专家。你的任务不是罗列段落大意，而是将全文的论点、论据和结论，融会贯通成一篇逻辑流畅、自成一体的总摘要。
+
+            请按以下长思考链（CoT） 内部推演（不输出）：
+
+            全文想解决的核心问题是什么？
+
+            作者的核心结论（中心论点）是什么？
+
+            支撑该结论的 2-3 个一级分论点是什么？（只取主干，修剪枝叶）
+
+            如何将这些分论点用“因果”、“转折”、“递进”的逻辑缝合起来，形成一个不依赖于原文章节的自然段落？
+
+            Few-shot 示例（总摘要格式）：
+
+            原文：（一篇关于远程办公的调研报告）
+
+            总摘要：本研究通过为期一年的追踪调查，揭示了远程办公对团队创新力的非线性影响。研究发现，虽然完全远程会削弱即兴碰撞带来的灵感，但每周 2-3
+            天的混合办公模式不仅能维持协作效率，反而因给予了员工深度思考的时间，使得复杂问题的解决方案数量提升了 20%。作者据此建议，企业不应纠结于“是否”远程，而应聚焦于“如何”基于任务复杂度动态调整办公策略。'
+        - id: 566fe4fc-abae-4722-a035-3e2aa3570334
+          role: user
+          text: '文章标题：{{#1786846846750.title#}}
+
+            正文：{{#1786847100265.cleaned_content#}}
+
+            事实锚点（仅供参考，不得添加额外事实）：{{#1786847540451.text#}}
+
+            硬性要求：
+
+            1.最终只输出 一段或两段 连贯的纯文本总摘要（不要使用“第一点、第二点”或“段落一、段落二”这样的分割词）。
+
+            2.总字数控制在 200~300字（可根据你的场景调整）。
+
+            3.摘要必须呈现出“引出问题 → 分析论证 → 得出结论”的完整逻辑闭环。'
+        reasoning_format: separated
+        selected: false
+        structured_output_enabled: true
+        title: 分层摘要生成
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1786848033443'
+      position:
+        x: 1628.0892742172312
+        y: 576.7597716077547
+      positionAbsolute:
+        x: 1628.0892742172312
+        y: 576.7597716077547
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 0eb100f7-b570-4f66-bc43-5da8bd9c6041
+          role: system
+          text: '你是一名摘要质量评审官。你的任务是检查以下摘要是否存在以下问题：
+
+
+            1. 事实性幻觉：总摘要中有无原文没有的数据/事件？
+
+            2. 真实性幻觉：摘要是否对原文信息做了过度解读或错误归因？
+
+            3. 内部矛盾：摘要的不同部分之间是否存在逻辑冲突？
+
+            4. 遗漏关键信息：摘要是否遗漏了原文的核心论点？
+
+            5.完整性幻觉：这篇总摘要是否只抓了文章的“开头”和“结尾”，而把文章中间最重要的论证过程遗漏了？
+
+            6.逻辑连贯性：总摘要内部是否逻辑自洽（不是拼凑的句子）？
+
+
+            请逐条对照原文进行检查，并给出：
+
+            - 通过/不通过 的判定
+
+            - 如果不通过，指出具体问题所在
+
+            - 给出修改建议'
+        - id: adb091b8-2a7b-4388-a966-1b2dbd086c69
+          role: user
+          text: '原文标题：{{#1786846846750.title#}}
+
+            原文内容：{{#1786847100265.cleaned_content#}}
+
+            待审核摘要：{{#1786848033443.text#}}
+
+
+            请严格对照原文进行一致性检查，只依据原文内容做判断。'
+        reasoning_format: separated
+        selected: true
+        structured_output_enabled: true
+        title: 自我一致性校验
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1786848808991'
+      position:
+        x: 2123.6914597200125
+        y: 738.2911431670818
+      positionAbsolute:
+        x: 2123.6914597200125
+        y: 738.2911431670818
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.2
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: f6250f81-deab-4d60-9f7d-608c4b093835
+          role: system
+          text: '你是一名资深的出版物审稿人（Senior Editor）。你的任务是基于原文和上一轮的校验反馈，生成最终版本的摘要。
+
+
+            在生成最终摘要前，请逐条确认（内部思考，不输出）：
+
+            1. 摘要中的每一个事实是否都能在原文中找到依据？
+
+            2. 摘要中的每一个数字是否与原文一致？
+
+            3. 摘要是否保持了原文的立场和语气？
+
+            4. 摘要是否清晰、简洁、逻辑通顺？
+
+            [重要约束]
+
+            最终摘要语气要符合新闻稿的范式。不要以“这篇文章”来开头，像总结评论
+
+
+            如果以上任何一条答案为“否”，请修正后再输出。'
+        - id: 802394b8-7c8d-4d97-a3fe-d58a270c0df9
+          role: user
+          text: "原文标题：{{#1786846846750.title#}}\n原文内容：{{#1786847100265.cleaned_content#}}\n\
+            上一版摘要：{{#1786848033443.text#}}\n校验反馈：{{#1786848808991.text#}}\n\n请基于以上所有信息，生成最终版本的摘要。输出格式：\n\
+            {\n    \"one_sentence_summary\": \"总摘要\"\n}"
+        reasoning_format: separated
+        selected: false
+        structured_output_enabled: true
+        title: 最终润色与幻觉复审
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1786849009929'
+      position:
+        x: 2483.9127304423923
+        y: 738.2911431670818
+      positionAbsolute:
+        x: 2483.9127304423923
+        y: 738.2911431670818
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    viewport:
+      x: -685.4001210201295
+      y: -98.32868031209813
+      zoom: 0.6108495061163837
+  rag_pipeline_variables: []

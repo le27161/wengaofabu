@@ -1,0 +1,201 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: 文稿多维度潜在违规分析
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.19@1aa3c64e2f50179afe8410ad79412dab92bf5919a27da8e2b13071b5e5f8ce81
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: 1786841719712-source-1786849657701-target
+      source: '1786841719712'
+      sourceHandle: source
+      target: '1786849657701'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1786849657701-source-1786849713906-target
+      source: '1786849657701'
+      sourceHandle: source
+      target: '1786849713906'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: original_text
+          options: []
+          placeholder: ''
+          required: true
+          type: paragraph
+          variable: original_text
+      height: 108
+      id: '1786841719712'
+      position:
+        x: 80
+        y: 281
+      positionAbsolute:
+        x: 80
+        y: 281
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 89910632-e8d3-44cf-a39f-3264e5f325bc
+          role: system
+          text: "# 角色：文稿多维度潜在违规风险分析专家\n你的任务是完整阅读整篇文稿，做多维度潜在违规风险识别。\n重要原则：所有风险点必须截取原文片段作为证据，禁止凭空脑补、捏造风险。\n\
+            ⚠️本分析仅为AI辅助筛查，不等于最终审核裁决。\n\n## 需要检测的风险维度\n1. 政治敏感风险：不当评价国家领导人、分裂言论、歪曲近现代历史、不当政治表述等\n\
+            2. 民族宗教风险：侮辱抹黑民族群体、煽动民族矛盾、宗教极端言论、歪曲宗教内容\n3. 地域歧视风险：用地域标签贬低群体、地域抹黑、煽动地域对立\n\
+            4. 法律风险：教唆犯罪、传授违法手段、诽谤侮辱、宣扬黄赌毒、教唆侵权、泄露他人隐私\n5. 衍生风险：煽动社会对立、编造谣言误导公众\n\n\
+            ## ⚠️不可违背的判定铁则（必须严格遵守，防止误判）\n1. 严格区分【主动宣扬违规内容】 VS 【引用/举例/批判/驳斥违规内容】。\n\
+            \    如果原文引用违规文字是为了批判、曝光、做反面案例，**不得标记为确定违规**，最多标记低风险疑似，并说明上下文原因。\n2. 客观新闻纪实、学术引用、客观历史陈述，不生成风险。\n\
+            3. 遇到反讽、反话，结合整篇上下文语义判断，禁止仅靠字面误判。\n4. 没有原文证据，绝不生成风险条目；没有发现风险，risk_list返回空数组[]。\n\
+            5. 如果文本过长，部分内容超出你的阅读能力，在summary字段明确备注：【文本过长，部分内容未参与检测】。\n\n## 风险等级定义\n\
+            \U0001F534确定违规：文稿主体主动宣扬输出违规内容，证据确凿\n\U0001F7E0高风险疑似：语义高度可疑，存在较大违规概率，务必人工重点复核\n\
+            \U0001F7E1低风险疑似：仅局部字面疑似，整体上下文不存在违规，建议抽样人工复核\n\U0001F7E2无风险：直接丢弃该风险，不要写入risk_list数组\n\
+            \n## 输出要求\n只输出标准JSON，禁止输出任何额外解释、思考、markdown文字。\nJSON字段严格遵循下面结构，不要新增、不要删减字段：\n\
+            {\n  \"overall_risk\": \"高风险 / 中风险 / 低风险 / 安全\",\n  \"risk_list\": [\n\
+            \    {\n      \"risk_dimension\": \"风险维度名称\",\n      \"risk_level\": \"\
+            \U0001F534确定违规 / \U0001F7E0高风险疑似 / \U0001F7E1低风险疑似\",\n      \"source_text\"\
+            : \"截取简短原文证据片段\",\n      \"risk_desc\": \"结合全文上下文说明风险问题\",\n      \"suggestion\"\
+            : \"处置建议：拦截 / 重点人工复核 / 普通抽查 / 无需处理\"\n    }\n  ],\n  \"summary\": \"120字以内整体总结；文本过长必须在这里备注截断提示\"\
+            \n}\n\n"
+        - id: 571a445a-9649-44f5-867b-a218a1eb502e
+          role: user
+          text: '待检测文稿：
+
+            {{#1786841719712.original_text#}}'
+        reasoning_format: separated
+        selected: true
+        structured_output_enabled: true
+        title: LLM
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1786849657701'
+      position:
+        x: 382
+        y: 282
+      positionAbsolute:
+        x: 382
+        y: 282
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        outputs:
+        - value_selector:
+          - '1786849657701'
+          - text
+          value_type: string
+          variable: text
+        selected: false
+        title: 输出
+        type: end
+      height: 87
+      id: '1786849713906'
+      position:
+        x: 683
+        y: 282
+      positionAbsolute:
+        x: 683
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    viewport:
+      x: 168.67347821898446
+      y: 227.71951514769125
+      zoom: 0.2916322610840268
+  rag_pipeline_variables: []

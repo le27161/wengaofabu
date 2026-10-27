@@ -1,0 +1,24 @@
+# 本地/敏感文件
+.env
+.env.*
+!.env.example
+.idea/
+*.log
+load_test*.log
+faulthandler*.log
+import_*.log
+seq_*.log
+embedding_score.log
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# 运行时数据（由 docker compose 挂载卷持久化）
+uploads/
+
+# 测试/辅助脚本（生产镜像不需要）
+smoke_test.py
+test_*.py

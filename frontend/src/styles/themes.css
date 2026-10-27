@@ -1,0 +1,3291 @@
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Zhi+Mang+Xing&display=swap');
+
+/* ============================================================
+ * 门户主题（design.md 扩展 · 2026-08-11 布局升级版）
+ *
+ * 换肤原理：PortalLayout 的外壳元素按后端 portal_theme 配置挂载
+ * .theme-cyber / .theme-comic 类，覆盖 :root 的设计令牌；
+ * 门户组件全部通过 var(--*) 引用令牌，因此自动换肤，业务逻辑零改动。
+ * 登录页 / 后台页不挂主题类，保持经典编辑风。
+ *
+ * 扩展新风格：在 backend/app/routers/portal.py 的 PORTAL_THEMES
+ * 登记 key，并在本文件新增 .theme-<key> 覆盖块。
+ *
+ * 2026-08-11 布局升级：参考 info/01-neon.html（赛博霓虹）与
+ * info/18-comic.html（漫画波点）重做两套主题的布局与动效；
+ * 仅修改 CSS，不改变任何业务组件结构与接口。
+ * ============================================================ */
+
+/* ---- 赛博霓虹 Cyber Neon：暗底 + 霓虹青/品红 + 辉光 + CRT 扫描线 ---- */
+.theme-cyber {
+  font-family: var(--font-body);
+  --color-primary: #00e5ff;
+  --color-primary-dark: #00b8d4;
+  --color-primary-soft: rgba(0, 229, 255, 0.14);
+  --color-secondary: #7c4dff;
+  --color-accent: #ff2d78;
+  --color-accent-soft: rgba(255, 45, 120, 0.16);
+  --color-focus: #00e5ff;
+  --color-bg: #0a0e1a;
+  --color-surface: #101528;
+  --color-text: #e6f7ff;
+  --color-text-secondary: #9fb3c8;
+  --color-text-muted: #5c6f84;
+  --color-border: #1d2a45;
+  --color-danger: #ff5370;
+  --color-success: #2ee6a8;
+
+  --color-paper: #0d1322;
+  --color-paper-2: #121a30;
+  --color-ink: #e6f7ff;
+  --color-ink-2: #9fb3c8;
+  --color-ink-3: #64748b;
+  --color-rule: #1d2a45;
+  --color-rule-strong: #2a3b5c;
+  --color-accent-2: #ff2d78;
+  --color-accent-2-soft: rgba(255, 45, 120, 0.16);
+
+  --font-heading: 'Orbitron', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: 'Rajdhani', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  --shadow-card: 0 0 0 1px rgba(0, 229, 255, 0.18), 0 0 22px rgba(0, 229, 255, 0.12);
+  --shadow-float: 0 0 0 1px rgba(255, 45, 120, 0.28), 0 0 30px rgba(255, 45, 120, 0.18);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --color-footer-bg: #04060d;
+  --color-footer-text: #7f93ad;
+  --color-footer-strong: #eaffff;
+  --color-footer-link-hover: #00e5ff;
+
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* ---- 漫画波点 Comic Pop：奶黄底 + 高饱和三原色 + 粗黑描边 + 硬投影 ---- */
+.theme-comic {
+  font-family: var(--font-body);
+  --color-primary: #2f6bff;
+  --color-primary-dark: #1a4fd8;
+  --color-primary-soft: #dbe6ff;
+  --color-secondary: #ffd400;
+  --color-accent: #ff3b30;
+  --color-accent-soft: #ffe3e0;
+  --color-focus: #ff3b30;
+  --color-bg: #fff6e0;
+  --color-surface: #ffffff;
+  --color-text: #1a1a2e;
+  --color-text-secondary: #4a4a68;
+  --color-text-muted: #7a7a98;
+  --color-border: #1a1a2e;
+  --color-danger: #ff3b30;
+  --color-success: #1faa59;
+
+  --color-paper: #fffdf5;
+  --color-paper-2: #fff3d0;
+  --color-ink: #1a1a2e;
+  --color-ink-2: #4a4a68;
+  --color-ink-3: #7a7a98;
+  --color-rule: #1a1a2e;
+  --color-rule-strong: #1a1a2e;
+  --color-accent-2: #ff8a00;
+  --color-accent-2-soft: #ffe6c2;
+
+  --font-heading: 'Bangers', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: 'Comic Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  --rule: 2px;
+  --radius-sm: 0px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --shadow-card: 3px 3px 0 rgba(26, 26, 46, 0.85);
+  --shadow-float: 5px 5px 0 rgba(26, 26, 46, 0.85);
+
+  --color-footer-bg: #1a1a2e;
+  --color-footer-text: #c8c8e0;
+  --color-footer-strong: #ffffff;
+  --color-footer-link-hover: #ffd400;
+
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* ============================================================
+ * 主题专属动效 keyframes（全局，非 scoped）
+ * ============================================================ */
+
+/* 赛博霓虹：光标闪烁 / 标题故障闪烁 / 数据流动划线 */
+@keyframes cyber-blink {
+  50% { opacity: 0; }
+}
+
+@keyframes cyber-flicker {
+  0%, 100% { opacity: 1; }
+  41% { opacity: 1; }
+  42% { opacity: 0.35; }
+  43% { opacity: 1; }
+  78% { opacity: 1; }
+  79% { opacity: 0.6; }
+  80% { opacity: 1; }
+}
+
+@keyframes cyber-scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* ============================================================
+ * 主题专属布局（PortalLayout 外壳挂类后作用于全部门户页面；
+ * 选择器用 .portal-shell.theme-* 提升优先级，确保覆盖组件 scoped 样式）
+ * ============================================================ */
+
+/* ============ 赛博霓虹 Cyber：NIGHT CITY EDITION ============
+ * 参考 info/01-neon.html：暗底网格 + CRT 扫描线 + 霓虹辉光 +
+ * 等宽字体 HUD + 斜切面板，营造夜之城终端感。
+ * ============================================================ */
+
+/* 外壳：隔离层级，让 ::before 网格在内容下层、::after 扫描线在内容上层 */
+.portal-shell.theme-cyber {
+  isolation: isolate;
+}
+
+/* 全屏网格背景（内容下层） */
+.portal-shell.theme-cyber::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.055) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* CRT 扫描线（内容上层，纯装饰不拦截点击） */
+.portal-shell.theme-cyber::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 2px,
+    rgba(0, 0, 0, 0.16) 2px 4px
+  );
+}
+
+/* ---- 报头：玻璃 HUD + 角标 + 霓虹底线 ---- */
+.portal-shell.theme-cyber .masthead {
+  background: rgba(8, 12, 24, 0.82);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.4);
+  backdrop-filter: blur(12px);
+  position: relative;
+}
+
+.portal-shell.theme-cyber .masthead::before,
+.portal-shell.theme-cyber .masthead::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: rgba(0, 229, 255, 0.9);
+  border-style: solid;
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.8));
+  pointer-events: none;
+}
+
+.portal-shell.theme-cyber .masthead::before {
+  top: 6px;
+  left: 8px;
+  border-width: 2px 0 0 2px;
+}
+
+.portal-shell.theme-cyber .masthead::after {
+  bottom: 6px;
+  right: 8px;
+  border-width: 0 2px 2px 0;
+}
+
+.portal-shell.theme-cyber .brand__logo rect {
+  fill: #00e5ff;
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.9));
+}
+
+.portal-shell.theme-cyber .brand__text {
+  font-family: 'Orbitron', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 14px rgba(0, 229, 255, 0.9);
+}
+
+/* 品牌名后加终端光标 */
+.portal-shell.theme-cyber .brand__text::after {
+  content: '_';
+  margin-left: 2px;
+  color: #ffe600;
+  animation: cyber-blink 1s steps(1) infinite;
+}
+
+/* ---- 搜索框：霓虹胶囊 + 辉光聚焦 ---- */
+.portal-shell.theme-cyber .search-box {
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  border-radius: 999px;
+  padding: 8px 6px 8px 16px;
+  background: rgba(0, 229, 255, 0.07);
+}
+
+.portal-shell.theme-cyber .search-box:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.18), 0 0 16px rgba(0, 229, 255, 0.35);
+}
+
+.portal-shell.theme-cyber .search-box input {
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+/* ---- 主导航：终端命令行，链接用 // 分隔 ---- */
+.portal-shell.theme-cyber .masthead__nav {
+  background: rgba(10, 14, 28, 0.92);
+  border-top: 1px solid rgba(0, 229, 255, 0.25);
+}
+
+.portal-shell.theme-cyber .masthead__nav-inner {
+  gap: 0;
+}
+
+.portal-shell.theme-cyber .masthead__nav a {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 13px;
+  color: var(--color-ink-2);
+  border-right: 1px solid rgba(0, 229, 255, 0.14);
+  transition: color var(--dur-base) var(--ease-out),
+    background var(--dur-base) var(--ease-out),
+    text-shadow var(--dur-base) var(--ease-out);
+}
+
+.portal-shell.theme-cyber .masthead__nav a:first-child {
+  border-left: 1px solid rgba(0, 229, 255, 0.14);
+}
+
+.portal-shell.theme-cyber .masthead__nav a::before {
+  content: '//';
+  margin-right: 8px;
+  font-size: 10px;
+  color: var(--color-accent-2);
+  opacity: 0.75;
+}
+
+.portal-shell.theme-cyber .masthead__nav a:hover {
+  color: var(--color-primary);
+  background: rgba(0, 229, 255, 0.06);
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+}
+
+.portal-shell.theme-cyber .masthead__nav a.active {
+  color: var(--color-primary);
+  background: rgba(0, 229, 255, 0.09);
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.9);
+}
+
+.portal-shell.theme-cyber .masthead__nav a.active::after {
+  height: 3px;
+  background: var(--color-primary);
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* ---- 登录 / 注册按钮：霓虹描边 ---- */
+.portal-shell.theme-cyber .link-btn {
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 2px;
+  color: var(--color-primary);
+}
+
+.portal-shell.theme-cyber .link-btn:hover {
+  color: var(--color-primary);
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
+}
+
+.portal-shell.theme-cyber .link-btn--solid {
+  background: var(--color-accent-2);
+  border-color: var(--color-accent-2);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(255, 45, 120, 0.5);
+}
+
+.portal-shell.theme-cyber .link-btn--solid:hover {
+  background: var(--color-accent-2);
+  color: #fff;
+  box-shadow: 0 0 22px rgba(255, 45, 120, 0.7);
+}
+
+/* ---- 公告：终端提示行 ---- */
+.portal-shell.theme-cyber .notice {
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-left: 3px solid #ffe600;
+  background: rgba(0, 229, 255, 0.06);
+}
+
+.portal-shell.theme-cyber .notice__label {
+  background: #ffe600;
+  color: #0a0e1a;
+  font-family: Consolas, 'JetBrains Mono', monospace;
+  letter-spacing: 0.1em;
+}
+
+.portal-shell.theme-cyber .notice__text {
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* ---- 头条：HUD 面板 + 斜切封面 + 故障标题 ---- */
+.portal-shell.theme-cyber .lead {
+  position: relative;
+}
+
+.portal-shell.theme-cyber .lead__story {
+  position: relative;
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  background:
+    linear-gradient(120deg, rgba(0, 229, 255, 0.08), transparent 42%),
+    rgba(13, 19, 34, 0.85);
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.18), inset 0 0 80px rgba(0, 229, 255, 0.05);
+}
+
+/* HUD 四角括号 */
+.portal-shell.theme-cyber .lead__story::before,
+.portal-shell.theme-cyber .lead__story::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.portal-shell.theme-cyber .lead__story::before {
+  top: 10px;
+  left: 10px;
+  border-top: 2px solid #00e5ff;
+  border-left: 2px solid #00e5ff;
+  filter: drop-shadow(0 0 6px #00e5ff);
+}
+
+.portal-shell.theme-cyber .lead__story::after {
+  bottom: 10px;
+  right: 10px;
+  border-bottom: 2px solid #ff2d78;
+  border-right: 2px solid #ff2d78;
+  filter: drop-shadow(0 0 6px #ff2d78);
+}
+
+.portal-shell.theme-cyber .lead__kicker {
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  letter-spacing: 0.3em;
+  background: var(--color-accent-2);
+  color: #fff;
+  padding: 5px 14px;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  box-shadow: 0 0 14px rgba(255, 45, 120, 0.5);
+}
+
+.portal-shell.theme-cyber .lead__title {
+  animation: cyber-flicker 6s infinite;
+  text-shadow: 0 0 24px rgba(0, 229, 255, 0.4);
+}
+
+.portal-shell.theme-cyber .lead__meta {
+  font-family: Consolas, 'JetBrains Mono', monospace;
+  font-size: var(--text-xs);
+}
+
+.portal-shell.theme-cyber .lead__meta::after {
+  content: '█';
+  margin-left: 6px;
+  color: #ffe600;
+  animation: cyber-blink 1s steps(1) infinite;
+}
+
+.portal-shell.theme-cyber .lead__cover {
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.2);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.portal-shell.theme-cyber .lead__cover--placeholder {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 229, 255, 0.12) 0 8px,
+    rgba(13, 19, 34, 0.7) 8px 16px
+  );
+  color: var(--color-primary);
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* 轮播头条：霓虹边框 */
+.portal-shell.theme-cyber .lead__carousel {
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  box-shadow: 0 0 34px rgba(0, 229, 255, 0.15);
+}
+
+.portal-shell.theme-cyber .lead__mask {
+  background: linear-gradient(180deg, rgba(4, 6, 13, 0) 30%, rgba(4, 6, 13, 0.85));
+}
+
+.portal-shell.theme-cyber .lead__mask h2 {
+  font-family: 'Orbitron', 'PingFang SC', sans-serif;
+  text-shadow: 0 0 16px rgba(0, 229, 255, 0.8);
+}
+
+.portal-shell.theme-cyber .el-carousel__indicator--active .el-carousel__button {
+  background: var(--color-primary);
+  box-shadow: 0 0 8px var(--color-primary);
+}
+
+/* ---- 首页两栏：最新发布（终端日志） + 热门排行（窗口面板） ---- */
+.portal-shell.theme-cyber .home__grid {
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+}
+
+.portal-shell.theme-cyber .home__grid section {
+  background: rgba(13, 19, 34, 0.45);
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  padding: 14px;
+}
+
+.portal-shell.theme-cyber .home__grid aside {
+  background: rgba(13, 19, 34, 0.6);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  padding: 14px;
+}
+
+.portal-shell.theme-cyber .home__grid aside .index-section__head {
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 8px 10px;
+  margin: -14px -14px 12px;
+}
+
+.portal-shell.theme-cyber .home__grid aside .index-section__head h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.portal-shell.theme-cyber .home__grid aside .index-section__head h2::before {
+  content: '◤ ';
+  color: var(--color-accent-2);
+}
+
+.portal-shell.theme-cyber .index-section__head {
+  border-bottom: 1px solid rgba(0, 229, 255, 0.35);
+}
+
+.portal-shell.theme-cyber .index-section__head h2::before,
+.portal-shell.theme-cyber .section__head h2::before {
+  content: '// ';
+  color: var(--color-accent-2);
+  font-family: Consolas, monospace;
+}
+
+.portal-shell.theme-cyber .index-section__head h2,
+.portal-shell.theme-cyber .section__head h2 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* 最新发布列表：终端日志行 */
+.portal-shell.theme-cyber .story-list__link {
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  border-left: 2px solid transparent;
+  padding-left: 8px;
+}
+
+.portal-shell.theme-cyber .story-list__link:hover {
+  background: rgba(0, 229, 255, 0.07);
+  border-left-color: var(--color-primary);
+}
+
+.portal-shell.theme-cyber .story-list__tag {
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #c9a8ff;
+  background: rgba(124, 77, 255, 0.22);
+  border: 1px solid rgba(124, 77, 255, 0.5);
+}
+
+.portal-shell.theme-cyber .story-list__time {
+  font-family: Consolas, 'JetBrains Mono', monospace;
+}
+
+/* 热门排行：霓虹数字 */
+.portal-shell.theme-cyber .rank-list__no {
+  font-family: 'Orbitron', sans-serif;
+  color: var(--color-ink-3);
+  font-size: var(--text-xl);
+}
+
+.portal-shell.theme-cyber .rank-list__no--top {
+  color: var(--color-accent-2);
+  text-shadow: 0 0 12px rgba(255, 45, 120, 0.8);
+}
+
+.portal-shell.theme-cyber .rank-list a:hover {
+  background: rgba(0, 229, 255, 0.06);
+}
+
+.portal-shell.theme-cyber .rank-list__views {
+  font-family: Consolas, monospace;
+}
+
+/* ---- 栏目分区：HUD 文章卡 + 宽窄错落 bento 网格 ---- */
+@media (min-width: 1024px) {
+  .portal-shell.theme-cyber .section__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  /* 每 4 张卡错落：第 1、4 张占 2 列 */
+  .portal-shell.theme-cyber .section__grid .article-card:nth-child(4n + 1),
+  .portal-shell.theme-cyber .section__grid .article-card:nth-child(4n + 4) {
+    grid-column: span 2;
+  }
+
+  .portal-shell.theme-cyber .section__grid .article-card:nth-child(4n + 1) .article-card__title {
+    font-size: var(--text-2xl);
+  }
+
+  .portal-shell.theme-cyber .article-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+.portal-shell.theme-cyber .article-card {
+  flex-direction: column;
+  position: relative;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: var(--radius-md);
+  background: linear-gradient(160deg, rgba(16, 21, 40, 0.9), rgba(13, 19, 34, 0.75));
+  padding: 14px;
+  margin-bottom: 4px;
+  transition: border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+
+/* 卡片右上角数据角标 */
+.portal-shell.theme-cyber .article-card::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-top: 1px solid rgba(255, 45, 120, 0.8);
+  border-right: 1px solid rgba(255, 45, 120, 0.8);
+}
+
+.portal-shell.theme-cyber .article-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.25);
+  transform: translateY(-3px);
+}
+
+.portal-shell.theme-cyber .article-card__cover {
+  flex-basis: auto;
+  width: 100%;
+  min-height: 0;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+.portal-shell.theme-cyber .article-card__cover--placeholder {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 229, 255, 0.1) 0 8px,
+    rgba(13, 19, 34, 0.65) 8px 16px
+  );
+  color: var(--color-primary);
+  font-family: 'Orbitron', sans-serif;
+}
+
+.portal-shell.theme-cyber .tag {
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+}
+
+.portal-shell.theme-cyber .article-card__meta {
+  font-family: Consolas, 'JetBrains Mono', monospace;
+}
+
+.portal-shell.theme-cyber .article-card__title a:hover {
+  color: var(--color-primary);
+}
+
+/* ---- 栏目 / 搜索 / 收藏页：HUD 页头 + 终端排序钮 ---- */
+.portal-shell.theme-cyber .cat-head,
+.portal-shell.theme-cyber .page-head {
+  border-bottom: 1px solid rgba(0, 229, 255, 0.35);
+}
+
+.portal-shell.theme-cyber .cat-head h1::before,
+.portal-shell.theme-cyber .page-head__title::before {
+  content: '> ';
+  color: #ffe600;
+  font-family: Consolas, monospace;
+}
+
+.portal-shell.theme-cyber .cat-head h1,
+.portal-shell.theme-cyber .page-head__title {
+  font-family: 'Orbitron', 'PingFang SC', sans-serif;
+  text-shadow: 0 0 18px rgba(0, 229, 255, 0.5);
+}
+
+.portal-shell.theme-cyber .sort-bar button {
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.portal-shell.theme-cyber .sort-bar button.active {
+  color: var(--color-primary);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.7);
+}
+
+.portal-shell.theme-cyber .sort-bar button.active::after {
+  height: 2px;
+  background: var(--color-primary);
+  box-shadow: 0 0 8px var(--color-primary);
+}
+
+/* ---- 文章详情：HUD 文档面板 + 霓虹操作按钮 ---- */
+.portal-shell.theme-cyber .detail__doc {
+  position: relative;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  background: rgba(13, 19, 34, 0.72);
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
+}
+
+.portal-shell.theme-cyber .detail__doc::before,
+.portal-shell.theme-cyber .detail__doc::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.portal-shell.theme-cyber .detail__doc::before {
+  top: 10px;
+  left: 10px;
+  border-top: 2px solid #00e5ff;
+  border-left: 2px solid #00e5ff;
+  filter: drop-shadow(0 0 6px #00e5ff);
+}
+
+.portal-shell.theme-cyber .detail__doc::after {
+  bottom: 10px;
+  right: 10px;
+  border-bottom: 2px solid #ff2d78;
+  border-right: 2px solid #ff2d78;
+  filter: drop-shadow(0 0 6px #ff2d78);
+}
+
+.portal-shell.theme-cyber .detail__crumb a {
+  color: var(--color-ink-3);
+}
+
+.portal-shell.theme-cyber .detail__crumb a:hover {
+  color: var(--color-primary);
+}
+
+.portal-shell.theme-cyber .detail__title {
+  font-family: 'Orbitron', 'PingFang SC', sans-serif;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+}
+
+.portal-shell.theme-cyber .detail__lead {
+  border-left: 3px solid #ffe600;
+}
+
+.portal-shell.theme-cyber .detail__cover {
+  border: 1px solid rgba(0, 229, 255, 0.4);
+}
+
+.portal-shell.theme-cyber .detail__meta {
+  font-family: Consolas, 'JetBrains Mono', monospace;
+}
+
+.portal-shell.theme-cyber .action-btn {
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 2px;
+  background: rgba(0, 229, 255, 0.04);
+  color: var(--color-ink-2);
+}
+
+.portal-shell.theme-cyber .action-btn:hover:not(:disabled) {
+  border-color: var(--color-accent-2);
+  color: var(--color-accent-2);
+  box-shadow: 0 0 12px rgba(255, 45, 120, 0.3);
+}
+
+.portal-shell.theme-cyber .action-btn--active {
+  background: rgba(255, 45, 120, 0.12);
+  border-color: var(--color-accent-2);
+  color: var(--color-accent-2);
+}
+
+.portal-shell.theme-cyber .related {
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  background: rgba(13, 19, 34, 0.7);
+}
+
+.portal-shell.theme-cyber .related__title {
+  font-family: 'Orbitron', 'PingFang SC', sans-serif;
+  letter-spacing: 0.06em;
+}
+
+.portal-shell.theme-cyber .related__cat {
+  color: var(--color-primary);
+  background: rgba(0, 229, 255, 0.1);
+}
+
+/* ---- 页脚：终端状态栏 ---- */
+.portal-shell.theme-cyber .colophon {
+  border-top: 1px solid rgba(0, 229, 255, 0.35);
+  background: #04060d;
+}
+
+.portal-shell.theme-cyber .colophon__inner::before {
+  content: '// WENGAO-PORTAL v1.0 · NIGHT CITY EDITION';
+  display: block;
+  width: 100%;
+  flex-basis: 100%;
+  font-family: Consolas, 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: rgba(0, 229, 255, 0.6);
+  margin-bottom: 12px;
+}
+
+.portal-shell.theme-cyber .colophon strong {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.portal-shell.theme-cyber .colophon p {
+  font-family: Consolas, 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+/* ============ 漫画波点 Comic：TO BE CONTINUED ============
+ * 参考 info/18-comic.html：奶黄波点底 + 粗黑描边 + 硬投影 +
+ * 倾斜面板 + 爆炸字贴纸 + 气泡列表，营造漫画书页感。
+ * ============================================================ */
+
+/* 外壳：隔离层级 + 全屏波点背景 */
+.portal-shell.theme-comic {
+  isolation: isolate;
+}
+
+.portal-shell.theme-comic::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.13) 1.6px, transparent 1.7px);
+  background-size: 19px 19px;
+}
+
+/* 通用：白色描边文字（漫画字效果） */
+.portal-shell.theme-comic .brand__text,
+.portal-shell.theme-comic .lead__title,
+.portal-shell.theme-comic .lead__kicker,
+.portal-shell.theme-comic .cat-head h1,
+.portal-shell.theme-comic .page-head__title,
+.portal-shell.theme-comic .detail__title {
+  text-shadow:
+    3px 3px 0 #fff,
+    -3px 3px 0 #fff,
+    3px -3px 0 #fff,
+    -3px -3px 0 #fff,
+    3px 0 0 #fff,
+    -3px 0 0 #fff,
+    0 3px 0 #fff,
+    0 -3px 0 #fff;
+}
+
+/* ---- 报头：黄色漫画横幅 + 双层黑边 ---- */
+.portal-shell.theme-comic .masthead {
+  background: #ffd23f;
+  border-bottom: 5px solid var(--color-ink);
+  box-shadow: 0 5px 0 var(--color-ink);
+  position: relative;
+}
+
+.portal-shell.theme-comic .brand {
+  transform: rotate(-2deg);
+}
+
+.portal-shell.theme-comic .brand__logo {
+  transform: rotate(4deg);
+}
+
+.portal-shell.theme-comic .brand__logo rect {
+  fill: var(--color-accent);
+}
+
+.portal-shell.theme-comic .brand__text {
+  font-family: 'Bangers', 'PingFang SC', 'Microsoft YaHei', cursive;
+  font-size: 28px;
+  color: var(--color-accent);
+  text-shadow: 2px 2px 0 #111, 4px 4px 0 rgba(26, 26, 46, 0.25);
+  letter-spacing: 0.04em;
+}
+
+/* ---- 搜索框：白底粗边胶囊 + 硬投影 ---- */
+.portal-shell.theme-comic .search-box {
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 4px 4px 0 rgba(26, 26, 46, 0.8);
+  padding: 6px 4px 6px 16px;
+}
+
+.portal-shell.theme-comic .search-box:focus-within {
+  box-shadow: 6px 6px 0 rgba(26, 26, 46, 0.8);
+}
+
+.portal-shell.theme-comic .search-box button:hover {
+  color: #fff;
+  background: var(--color-accent);
+}
+
+/* ---- 主导航：漫画芯片，悬停黑白反转 ---- */
+.portal-shell.theme-comic .masthead__nav {
+  background: #fff;
+  border-top: 3px solid var(--color-ink);
+}
+
+.portal-shell.theme-comic .masthead__nav-inner {
+  gap: 6px;
+}
+
+.portal-shell.theme-comic .masthead__nav a {
+  font-weight: 700;
+  font-size: 15px;
+  padding: 0 14px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+
+.portal-shell.theme-comic .masthead__nav a:hover {
+  color: #ffd23f;
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .masthead__nav a.active {
+  color: var(--color-ink);
+  background: var(--color-secondary);
+  border-color: var(--color-ink);
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.8);
+}
+
+.portal-shell.theme-comic .masthead__nav a.active::after {
+  display: none;
+}
+
+/* ---- 登录 / 注册按钮：硬投影胶囊 ---- */
+.portal-shell.theme-comic .link-btn {
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-ink);
+  font-weight: 800;
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.8);
+}
+
+.portal-shell.theme-comic .link-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 rgba(26, 26, 46, 0.8);
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .link-btn--solid {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* ---- 公告：漫画对话框 ---- */
+.portal-shell.theme-comic .notice {
+  border: 3px solid var(--color-ink);
+  background: #fff;
+  box-shadow: 5px 5px 0 rgba(26, 26, 46, 0.8);
+  position: relative;
+}
+
+.portal-shell.theme-comic .notice__label {
+  background: var(--color-secondary);
+  color: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  transform: rotate(-2deg);
+  font-weight: 800;
+}
+
+/* ---- 头条区：漫画封面 + 爆炸字贴纸 ---- */
+.portal-shell.theme-comic .lead {
+  position: relative;
+}
+
+/* 飘浮的拟声词 */
+.portal-shell.theme-comic .lead::before,
+.portal-shell.theme-comic .lead::after {
+  position: absolute;
+  z-index: 2;
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.portal-shell.theme-comic .lead::before {
+  content: 'POW!';
+  top: 6px;
+  left: 4%;
+  font-size: clamp(28px, 5vw, 52px);
+  color: var(--color-primary);
+  transform: rotate(-14deg);
+  text-shadow:
+    3px 3px 0 #fff,
+    -3px 3px 0 #fff,
+    3px -3px 0 #fff,
+    -3px -3px 0 #fff;
+}
+
+.portal-shell.theme-comic .lead::after {
+  content: 'WOW!';
+  bottom: 10px;
+  right: 4%;
+  font-size: clamp(24px, 4vw, 44px);
+  color: var(--color-accent-2);
+  transform: rotate(10deg);
+  text-shadow:
+    3px 3px 0 #fff,
+    -3px 3px 0 #fff,
+    3px -3px 0 #fff,
+    -3px -3px 0 #fff;
+}
+
+.portal-shell.theme-comic .lead__story {
+  position: relative;
+  border: 5px solid var(--color-ink);
+  box-shadow: 10px 10px 0 rgba(26, 26, 46, 0.85);
+  background: #fff;
+  transform: rotate(-0.4deg);
+  transition: transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.portal-shell.theme-comic .lead__story:hover {
+  transform: rotate(0deg) translate(-2px, -2px);
+  box-shadow: 14px 14px 0 rgba(26, 26, 46, 0.85);
+}
+
+/* 头条标签：爆炸星形贴纸 */
+.portal-shell.theme-comic .lead__kicker {
+  display: inline-block;
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: 18px;
+  background: var(--color-accent);
+  color: #fff;
+  border: 3px solid var(--color-ink);
+  clip-path: polygon(
+    50% 0, 62% 16%, 80% 8%, 84% 26%, 100% 26%, 92% 42%, 100% 58%,
+    84% 66%, 88% 84%, 70% 78%, 64% 96%, 50% 86%, 36% 96%, 30% 78%,
+    12% 84%, 16% 66%, 0 58%, 8% 42%, 0 26%, 16% 26%, 20% 8%, 38% 16%
+  );
+  transform: rotate(-4deg);
+  padding: 10px 22px;
+  letter-spacing: 0.08em;
+  filter: drop-shadow(4px 4px 0 #111);
+}
+
+.portal-shell.theme-comic .lead__title {
+  font-family: 'Bangers', 'PingFang SC', 'Microsoft YaHei', cursive;
+  color: var(--color-accent);
+  text-shadow:
+    4px 4px 0 var(--color-secondary),
+    7px 7px 0 rgba(26, 26, 46, 0.25);
+}
+
+.portal-shell.theme-comic .lead__summary {
+  font-weight: 700;
+}
+
+.portal-shell.theme-comic .lead__meta {
+  font-weight: 700;
+}
+
+.portal-shell.theme-comic .lead__meta span {
+  background: #ffe27a;
+  border: 2px solid var(--color-ink);
+  border-radius: 6px;
+  padding: 2px 8px;
+  transform: rotate(-1deg);
+}
+
+.portal-shell.theme-comic .lead__cover {
+  border: 4px solid var(--color-ink);
+  box-shadow: 6px 6px 0 rgba(26, 26, 46, 0.85);
+  transform: rotate(1deg);
+}
+
+.portal-shell.theme-comic .lead__cover--placeholder {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-family: 'Bangers', cursive;
+}
+
+/* 轮播头条：漫画面板框 */
+.portal-shell.theme-comic .lead__carousel {
+  border: 5px solid var(--color-ink);
+  box-shadow: 10px 10px 0 rgba(26, 26, 46, 0.85);
+}
+
+.portal-shell.theme-comic .lead__mask {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, rgba(17, 17, 17, 0.82));
+}
+
+.portal-shell.theme-comic .lead__mask h2 {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  color: #fff;
+  text-shadow: 4px 4px 0 var(--color-accent);
+}
+
+.portal-shell.theme-comic .el-carousel__indicator .el-carousel__button {
+  background: var(--color-ink);
+}
+
+/* ---- 首页两栏：排行榜左置 + 最新发布气泡列表 ---- */
+@media (min-width: 1024px) {
+  .portal-shell.theme-comic .home__grid {
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .portal-shell.theme-comic .home__grid aside {
+    order: 1;
+  }
+
+  .portal-shell.theme-comic .home__grid .index-section:first-child {
+    order: 2;
+  }
+}
+
+.portal-shell.theme-comic .home__grid aside .index-section__head h2 {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.portal-shell.theme-comic .index-section__head {
+  border-bottom: 3px solid var(--color-ink);
+}
+
+.portal-shell.theme-comic .index-section__head h2,
+.portal-shell.theme-comic .section__head h2 {
+  display: inline-block;
+  transform: rotate(-1.5deg);
+  background: var(--color-secondary);
+  color: var(--color-ink);
+  padding: 3px 16px;
+  border: 2px solid var(--color-ink);
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.85);
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  letter-spacing: 0.05em;
+}
+
+/* 最新发布：对话气泡式列表 */
+.portal-shell.theme-comic .story-list__item + .story-list__item {
+  border-top: 3px dashed var(--color-ink);
+}
+
+.portal-shell.theme-comic .story-list__link {
+  background: #fff;
+  border: 3px solid var(--color-ink);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  box-shadow: 4px 4px 0 rgba(26, 26, 46, 0.8);
+  transition: transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.portal-shell.theme-comic .story-list__item:nth-child(2n) .story-list__link {
+  transform: rotate(1deg);
+  background: #d9f0ff;
+}
+
+.portal-shell.theme-comic .story-list__item:nth-child(3n) .story-list__link {
+  transform: rotate(-1.2deg);
+  background: #fff4c2;
+}
+
+.portal-shell.theme-comic .story-list__link:hover {
+  transform: rotate(0deg) translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(26, 26, 46, 0.85);
+}
+
+.portal-shell.theme-comic .story-list__tag {
+  background: var(--color-secondary);
+  color: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  transform: rotate(-2deg);
+  font-weight: 800;
+}
+
+.portal-shell.theme-comic .story-list__time {
+  font-weight: 700;
+}
+
+/* 热门排行：三原色圆徽 + 粗边框 */
+.portal-shell.theme-comic .rank-list__no {
+  background: var(--color-secondary);
+  color: #fff;
+  border: 3px solid var(--color-ink);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  display: grid;
+  place-items: center;
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.85);
+}
+
+.portal-shell.theme-comic .rank-list__no--top {
+  background: var(--color-accent);
+}
+
+.portal-shell.theme-comic .rank-list a:hover .rank-list__title {
+  text-decoration: underline wavy 2px;
+  text-underline-offset: 3px;
+}
+
+.portal-shell.theme-comic .rank-list__views {
+  font-weight: 700;
+}
+
+/* ---- 栏目分区：双列漫画面板，斜向错落 + 彩色底 ---- */
+@media (min-width: 1024px) {
+  .portal-shell.theme-comic .section__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+}
+
+.portal-shell.theme-comic .section__desc {
+  font-weight: 700;
+}
+
+.portal-shell.theme-comic .section__more {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  letter-spacing: 0.06em;
+  background: var(--color-primary);
+  color: #fff;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  padding: 4px 14px;
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.8);
+  transform: rotate(-1deg);
+}
+
+.portal-shell.theme-comic .section__more:hover {
+  transform: rotate(0deg) translate(-1px, -1px);
+  box-shadow: 5px 5px 0 rgba(26, 26, 46, 0.8);
+}
+
+/* 漫画面板卡：斜向 + 彩色底 + 硬投影 + 贴纸 */
+.portal-shell.theme-comic .article-card {
+  position: relative;
+  border: 4px solid var(--color-ink);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 6px 6px 0 rgba(26, 26, 46, 0.85);
+  padding: 16px;
+  margin-bottom: 6px;
+  transition: transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.portal-shell.theme-comic .section__grid .article-card:nth-child(odd),
+.portal-shell.theme-comic .article-grid .article-card:nth-child(odd) {
+  transform: rotate(-1.2deg);
+  background: #fff4c2;
+}
+
+.portal-shell.theme-comic .section__grid .article-card:nth-child(even),
+.portal-shell.theme-comic .article-grid .article-card:nth-child(even) {
+  transform: rotate(1deg);
+  background: #d9f0ff;
+}
+
+.portal-shell.theme-comic .section__grid .article-card:nth-child(4n),
+.portal-shell.theme-comic .article-grid .article-card:nth-child(4n) {
+  background: #ffd9d9;
+}
+
+.portal-shell.theme-comic .section__grid .article-card:hover,
+.portal-shell.theme-comic .article-grid .article-card:hover {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow: 10px 10px 0 rgba(26, 26, 46, 0.85);
+}
+
+/* 首个栏目卡片贴 "NEW!" 贴纸 */
+.portal-shell.theme-comic .section__grid .article-card:first-child::after {
+  content: 'NEW!';
+  position: absolute;
+  top: -16px;
+  right: -8px;
+  font-family: 'Bangers', cursive;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  background: #ffd23f;
+  color: var(--color-ink);
+  border: 3px solid var(--color-ink);
+  border-radius: 10px;
+  padding: 2px 10px;
+  transform: rotate(8deg);
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.8);
+}
+
+.portal-shell.theme-comic .article-card__cover {
+  border: 2px solid var(--color-ink);
+}
+
+.portal-shell.theme-comic .article-card__cover--placeholder {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-family: 'Bangers', cursive;
+}
+
+.portal-shell.theme-comic .article-card__title {
+  font-family: 'Bangers', 'PingFang SC', 'Microsoft YaHei', cursive;
+  font-size: var(--text-xl);
+}
+
+.portal-shell.theme-comic .tag {
+  transform: rotate(-2deg);
+  background: var(--color-secondary);
+  color: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  font-weight: 800;
+}
+
+.portal-shell.theme-comic .article-card__meta {
+  font-weight: 700;
+}
+
+/* ---- 栏目 / 搜索 / 收藏页：漫画页头 + 芯片排序钮 + 双列错落卡 ---- */
+.portal-shell.theme-comic .cat-head,
+.portal-shell.theme-comic .page-head {
+  border-bottom: 4px solid var(--color-ink);
+}
+
+.portal-shell.theme-comic .cat-head h1,
+.portal-shell.theme-comic .page-head__title {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: clamp(34px, 6vw, 56px);
+  color: #fff;
+  text-shadow:
+    4px 4px 0 var(--color-secondary),
+    7px 7px 0 rgba(26, 26, 46, 0.3);
+  transform: rotate(-1deg);
+  display: inline-block;
+}
+
+.portal-shell.theme-comic .sort-bar {
+  gap: 14px;
+}
+
+.portal-shell.theme-comic .sort-bar button {
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 800;
+  padding: 6px 18px;
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.8);
+}
+
+.portal-shell.theme-comic .sort-bar button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 rgba(26, 26, 46, 0.8);
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .sort-bar button.active {
+  background: var(--color-secondary);
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .sort-bar button.active::after {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .portal-shell.theme-comic .article-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+/* ---- 文章详情：漫画书页 + 彩色操作按钮 ---- */
+.portal-shell.theme-comic .detail__doc {
+  border: 4px solid var(--color-ink);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 8px 8px 0 rgba(26, 26, 46, 0.85);
+}
+
+.portal-shell.theme-comic .detail__crumb a {
+  background: #ffe27a;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.portal-shell.theme-comic .detail__crumb a:hover {
+  color: var(--color-ink);
+  background: var(--color-secondary);
+}
+
+.portal-shell.theme-comic .detail__title {
+  font-family: 'Bangers', 'PingFang SC', 'Microsoft YaHei', cursive;
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-comic .detail__lead {
+  border-left: 6px solid var(--color-accent);
+  font-weight: 600;
+}
+
+.portal-shell.theme-comic .detail__cover {
+  border: 4px solid var(--color-ink);
+  border-radius: 12px;
+  box-shadow: 6px 6px 0 rgba(26, 26, 46, 0.8);
+}
+
+.portal-shell.theme-comic .detail__meta {
+  font-weight: 700;
+}
+
+.portal-shell.theme-comic .action-btn {
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-ink);
+  font-weight: 800;
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.8);
+}
+
+.portal-shell.theme-comic .action-btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 rgba(26, 26, 46, 0.8);
+  background: var(--color-accent-soft);
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .action-btn--active {
+  background: var(--color-secondary);
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .related {
+  border: 4px solid var(--color-ink);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 6px 6px 0 rgba(26, 26, 46, 0.8);
+}
+
+.portal-shell.theme-comic .related__title {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 4px 4px 0 var(--color-accent);
+  display: inline-block;
+  transform: rotate(-1deg);
+}
+
+.portal-shell.theme-comic .related__thumb {
+  border: 2px solid var(--color-ink);
+  border-radius: 6px;
+}
+
+.portal-shell.theme-comic .related__cat {
+  background: var(--color-secondary);
+  color: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  font-weight: 800;
+}
+
+/* ---- 页脚：TO BE CONTINUED ---- */
+.portal-shell.theme-comic .colophon {
+  background: var(--color-ink);
+  border-top: 6px solid var(--color-ink);
+}
+
+.portal-shell.theme-comic .colophon__inner::before {
+  content: 'TO BE CONTINUED...';
+  display: block;
+  width: 100%;
+  flex-basis: 100%;
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 0.15em;
+  color: #ffd23f;
+  margin-bottom: 12px;
+  transform: rotate(-1deg);
+}
+
+.portal-shell.theme-comic .colophon strong {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: 22px;
+  color: #ffd23f;
+}
+
+.portal-shell.theme-comic .colophon p {
+  color: #c8c8e0;
+}
+
+.portal-shell.theme-comic .colophon__links a {
+  color: #fff;
+  font-weight: 700;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+.portal-shell.theme-comic .colophon__links a:hover {
+  color: var(--color-ink);
+  background: #ffd23f;
+  border-color: #ffd23f;
+}
+
+/* ============================================================
+ * 右上角用户下拉菜单（Element Plus el-dropdown 弹层）主题化
+ * 说明：el-dropdown 弹层默认渲染到 <body> 下，PortalLayout 已把
+ * 主题类同步挂到 body（body.theme-*），此处用 body 前缀选择器
+ * 覆盖弹层样式，让菜单随主题换肤。
+ * ============================================================ */
+
+/* ---- 赛博霓虹：暗色玻璃菜单 + 霓虹描边 ---- */
+body.theme-cyber .el-dropdown__popper {
+  --el-bg-color-overlay: #101528;
+  --el-fill-color-light: rgba(0, 229, 255, 0.12);
+  --el-text-color-primary: #e6f7ff;
+  --el-text-color-regular: #9fb3c8;
+  --el-text-color-disabled: #5c6f84;
+  --el-border-color-light: rgba(0, 229, 255, 0.25);
+  --el-border-color-lighter: rgba(0, 229, 255, 0.18);
+  --el-box-shadow-light: 0 0 0 1px rgba(0, 229, 255, 0.35), 0 0 26px rgba(0, 229, 255, 0.22);
+}
+
+body.theme-cyber .el-dropdown__popper .el-dropdown-menu {
+  background: #101528;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+body.theme-cyber .el-dropdown__popper .el-dropdown-menu__item:not(.is-disabled):focus,
+body.theme-cyber .el-dropdown__popper .el-dropdown-menu__item:not(.is-disabled):hover {
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.12);
+}
+
+body.theme-cyber .el-dropdown__popper .el-dropdown-menu__item--divided {
+  border-top: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+body.theme-cyber .el-dropdown__popper .el-popper__arrow::before {
+  background: #101528;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+/* 用户头像：霓虹描边 */
+.portal-shell.theme-cyber .user-btn .el-avatar {
+  background: rgba(0, 229, 255, 0.12);
+  color: #00e5ff;
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.35);
+}
+
+/* ---- 漫画波点：漫画对话框菜单 + 粗黑描边 ---- */
+body.theme-comic .el-dropdown__popper {
+  --el-bg-color-overlay: #fffdf5;
+  --el-fill-color-light: #ffe27a;
+  --el-text-color-primary: #1a1a2e;
+  --el-text-color-regular: #1a1a2e;
+  --el-text-color-disabled: #7a7a98;
+  --el-border-color-light: #1a1a2e;
+  --el-border-color-lighter: #1a1a2e;
+  --el-box-shadow-light: 5px 5px 0 rgba(26, 26, 46, 0.85);
+}
+
+body.theme-comic .el-dropdown__popper .el-dropdown-menu {
+  background: #fffdf5;
+  border: 3px solid #1a1a2e;
+  border-radius: 10px;
+  padding: 6px;
+}
+
+body.theme-comic .el-dropdown__popper .el-dropdown-menu__item:not(.is-disabled):focus,
+body.theme-comic .el-dropdown__popper .el-dropdown-menu__item:not(.is-disabled):hover {
+  color: #1a1a2e;
+  background: #ffe27a;
+}
+
+body.theme-comic .el-dropdown__popper .el-dropdown-menu__item--divided {
+  border-top: 2px dashed #1a1a2e;
+}
+
+body.theme-comic .el-dropdown__popper .el-popper__arrow::before {
+  background: #fffdf5;
+  border: 2px solid #1a1a2e;
+}
+
+/* 用户头像：黄色漫画徽章 */
+.portal-shell.theme-comic .user-btn .el-avatar {
+  background: #ffd23f;
+  color: #1a1a2e;
+  border: 2px solid #1a1a2e;
+  box-shadow: 2px 2px 0 rgba(26, 26, 46, 0.85);
+  transform: rotate(-2deg);
+}
+
+/* ============================================================
+ * 响应式收敛：小屏去掉强倾斜与飘浮装饰，避免观感杂乱
+ * ============================================================ */
+@media (max-width: 768px) {
+  .portal-shell.theme-comic .lead::before,
+  .portal-shell.theme-comic .lead::after {
+    display: none;
+  }
+
+  .portal-shell.theme-comic .section__grid .article-card,
+  .portal-shell.theme-comic .article-grid .article-card,
+  .portal-shell.theme-comic .story-list__link {
+    transform: none !important;
+  }
+
+  .portal-shell.theme-comic .brand {
+    transform: none;
+  }
+
+  .portal-shell.theme-cyber .masthead__nav a::before {
+    content: none;
+  }
+}
+
+/* ---- 首页"为你推荐"区块：cyber 霓虹卡片 ---- */
+.portal-shell.theme-cyber .recommend-card {
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.1);
+}
+
+.portal-shell.theme-cyber .recommend-card:hover {
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.28);
+}
+
+.portal-shell.theme-cyber .recommend-card__title a {
+  font-family: 'Orbitron', 'PingFang SC', sans-serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---- 首页"为你推荐"区块：comic 漫画贴纸卡片 ---- */
+.portal-shell.theme-comic .recommend-card {
+  border: 2px solid var(--color-ink);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+.portal-shell.theme-comic .recommend-card:hover {
+  transform: translateY(-3px) rotate(-0.5deg);
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+.portal-shell.theme-comic .recommend-card__title a {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: 1.15rem;
+  letter-spacing: 0.03em;
+}
+/* ============================================================
+ * 关键词面板（KeywordPanel）主题适配
+ *
+ * 组件类名映射（v3 三段式卡片）：
+ *   .kw-panel          面板容器
+ *   .kw-panel__bar     引语栏
+ *   .kw-main-row       主关键词卡片集群
+ *   .kw-main-tag       主关键词卡片容器（--on 展开态）
+ *   .kw-main-tag__hash   第一段：# 跳正文
+ *   .kw-main-tag__hash-ring  # 圆圈
+ *   .kw-main-tag__text   第二段：关键词 → AI 解释
+ *   .kw-main-tag__caret  第三段：▾ 知识链
+ *   .kw-chains         知识链丝带
+ *   .kw-tag            分支标签
+ *   .explain-popup     弹窗（teleported to body）
+ * ============================================================ */
+
+/* ═══════════════════════════════════════════════════════════════
+   赛博霓虹：关键词面板
+   设计方向：暗色玻璃卡片 + 霓虹辉光 + 终端字体
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 关键词面板：提升到 CRT 扫描线（z-index:9990）上方，避免文字被遮挡 */
+.portal-shell.theme-cyber .kw-panel {
+  position: relative;
+  z-index: 9991;
+}
+
+/* 引语栏 */
+.portal-shell.theme-cyber .kw-panel__label {
+  color: #5c6f84;
+  font-family: 'Orbitron', 'PingFang SC', sans-serif;
+  letter-spacing: .12em;
+}
+
+.portal-shell.theme-cyber .kw-panel__dot {
+  color: #3a4d66;
+}
+
+.portal-shell.theme-cyber .kw-panel__count {
+  background: rgba(0,229,255,.1);
+  color: #7f93ad;
+}
+
+/* 主关键词卡片：暗色玻璃 + 霓虹配色 */
+.portal-shell.theme-cyber .kw-main-tag {
+  --_bg: rgba(13,19,34,.8);
+  --_accent: #00e5ff;
+  --_accent-soft: rgba(0,229,255,.18);
+  --_text: #9fb3c8;
+  --_divider: rgba(0,229,255,.12);
+
+  background: var(--_bg);
+  border: 1px solid rgba(0,229,255,.15);
+  box-shadow: 0 0 0 0 rgba(0,229,255,0);
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+}
+
+/* 覆盖经典编辑的 nth-child 色彩，赛博统一用霓虹调 */
+.portal-shell.theme-cyber .kw-main-tag:nth-child(8n+1),
+.portal-shell.theme-cyber .kw-main-tag:nth-child(8n+2),
+.portal-shell.theme-cyber .kw-main-tag:nth-child(8n+3),
+.portal-shell.theme-cyber .kw-main-tag:nth-child(8n+4),
+.portal-shell.theme-cyber .kw-main-tag:nth-child(8n+5),
+.portal-shell.theme-cyber .kw-main-tag:nth-child(8n+6),
+.portal-shell.theme-cyber .kw-main-tag:nth-child(8n+7),
+.portal-shell.theme-cyber .kw-main-tag:nth-child(8n+8) {
+  --_bg: rgba(13,19,34,.8);
+  --_accent: #00e5ff;
+  --_accent-soft: rgba(0,229,255,.18);
+}
+
+/* 顶部装饰条：赛博版半透明霓虹 */
+.portal-shell.theme-cyber .kw-main-tag::before {
+  opacity: .4;
+}
+
+.portal-shell.theme-cyber .kw-main-tag:hover::before {
+  opacity: .75;
+}
+
+.portal-shell.theme-cyber .kw-main-tag--on::before {
+  opacity: .9 !important;
+}
+
+.portal-shell.theme-cyber .kw-main-tag:hover {
+  background: rgba(0,229,255,.08);
+  border-color: rgba(0,229,255,.35);
+  box-shadow: 0 0 20px rgba(0,229,255,.15), 0 0 0 1px rgba(0,229,255,.2);
+}
+
+/* 第一段：# 跳转 */
+.portal-shell.theme-cyber .kw-main-tag__hash {
+  border-right-color: rgba(0,229,255,.12);
+}
+
+.portal-shell.theme-cyber .kw-main-tag__hash-ring {
+  background: rgba(0,229,255,.12);
+  color: #00e5ff;
+  box-shadow: 0 0 0 1px rgba(0,229,255,.25);
+  font-family: Consolas, monospace;
+}
+
+.portal-shell.theme-cyber .kw-main-tag__hash:hover .kw-main-tag__hash-ring {
+  background: #00e5ff;
+  color: #0a0e1a;
+  box-shadow: 0 0 0 5px rgba(0,229,255,.3), 0 0 14px rgba(0,229,255,.5);
+}
+
+/* 第二段：关键词文字 */
+.portal-shell.theme-cyber .kw-main-tag__text {
+  color: #9fb3c8;
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  letter-spacing: .04em;
+}
+
+.portal-shell.theme-cyber .kw-main-tag__text::after {
+  background: #00e5ff;
+  opacity: .4;
+}
+
+.portal-shell.theme-cyber .kw-main-tag__text:hover {
+  color: #00e5ff;
+  text-shadow: 0 0 10px rgba(0,229,255,.4);
+}
+
+/* 第三段：下拉箭头 */
+.portal-shell.theme-cyber .kw-main-tag__caret {
+  border-left-color: rgba(0,229,255,.12);
+  color: #5c6f84;
+}
+
+.portal-shell.theme-cyber .kw-main-tag__caret:hover {
+  color: #00e5ff;
+  background: rgba(0,229,255,.08);
+}
+
+/* 展开态 */
+.portal-shell.theme-cyber .kw-main-tag--on {
+  background: rgba(0,229,255,.1) !important;
+  border-color: #00e5ff !important;
+  box-shadow: 0 0 0 2px #00e5ff, 0 0 28px rgba(0,229,255,.35) !important;
+}
+
+.portal-shell.theme-cyber .kw-main-tag--on .kw-main-tag__hash-ring {
+  background: #00e5ff;
+  color: #0a0e1a;
+  box-shadow: 0 0 0 5px rgba(0,229,255,.3), 0 0 16px rgba(0,229,255,.5);
+}
+
+.portal-shell.theme-cyber .kw-main-tag--on .kw-main-tag__text {
+  color: #00e5ff;
+  text-shadow: 0 0 14px rgba(0,229,255,.5);
+}
+
+.portal-shell.theme-cyber .kw-main-tag--on .kw-main-tag__caret {
+  color: #00e5ff;
+}
+
+/* 链区丝带 */
+.portal-shell.theme-cyber .kw-chains {
+  background:
+    linear-gradient(135deg, rgba(10,14,26,.85) 0%, rgba(13,19,34,.85) 100%),
+    radial-gradient(circle at 20% 80%, rgba(0,229,255,.03) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(0,229,255,.03) 0%, transparent 40%);
+  border: 1px solid rgba(0,229,255,.15);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.3), inset 0 1px 0 rgba(0,229,255,.06);
+}
+
+/* 头部 */
+.portal-shell.theme-cyber .kw-chains__head {
+  border-bottom-color: rgba(0,229,255,.12);
+}
+
+.portal-shell.theme-cyber .kw-chains__head-icon {
+  color: #00e5ff;
+  opacity: .5;
+}
+
+.portal-shell.theme-cyber .kw-chains__head-title {
+  color: #9fb3c8;
+  font-family: 'Orbitron', 'PingFang SC', sans-serif;
+  letter-spacing: .08em;
+  font-size: 12px;
+}
+
+.portal-shell.theme-cyber .kw-chains__head-steps {
+  background: rgba(0,229,255,.1);
+  color: #00e5ff;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: .04em;
+}
+
+.portal-shell.theme-cyber .kw-chains__head-cat {
+  background: rgba(0,229,255,.12);
+  color: #00e5ff;
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  letter-spacing: .06em;
+}
+
+/* 底部提示 */
+.portal-shell.theme-cyber .kw-chains__hint {
+  color: #5c6f84;
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  letter-spacing: .03em;
+}
+
+/* 底部进度条：霓虹流光 */
+.portal-shell.theme-cyber .kw-chains__progress {
+  background: rgba(0,229,255,.08);
+  height: 3px;
+  overflow: hidden;
+}
+
+.portal-shell.theme-cyber .kw-chains__progress::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  height: auto;
+  background: linear-gradient(90deg, transparent 0%, #00e5ff 50%, transparent 100%);
+  animation: cyber-progress-shift 3s ease-in-out infinite;
+  transform: translateX(-40%);
+  width: 60%;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+@keyframes cyber-progress-shift {
+  0%, 100% { transform: translateX(-40%); }
+  50% { transform: translateX(80%); }
+}
+
+/* 左侧书脊 */
+.portal-shell.theme-cyber .kw-chains::after {
+  background: #00e5ff;
+  opacity: .25;
+  box-shadow: 0 0 8px rgba(0,229,255,.3);
+}
+
+.portal-shell.theme-cyber .kw-chains:hover::after {
+  opacity: .45;
+}
+
+.portal-shell.theme-cyber .kw-chains::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 16px;
+  width: auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,229,255,.4) 20%, transparent 50%, rgba(0,229,255,.4) 80%, transparent);
+  opacity: .5;
+  border-radius: 1px;
+  z-index: 1;
+}
+
+/* 链行 hover */
+.portal-shell.theme-cyber .kw-chain:hover {
+  background: rgba(0,229,255,.04);
+  border-left-color: #00e5ff;
+}
+
+/* 分支标签 */
+.portal-shell.theme-cyber .kw-tag {
+  background: rgba(13,19,34,.7);
+  border-color: rgba(0,229,255,.15);
+  color: #7f93ad;
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  letter-spacing: .03em;
+}
+
+/* 深度渐变 */
+.portal-shell.theme-cyber .kw-tag--deep {
+  background: rgba(10,14,26,.5);
+  color: #5c6f84;
+  border-color: rgba(0,229,255,.08);
+  font-size: 11.5px;
+}
+
+.portal-shell.theme-cyber .kw-tag--shallow {
+  border-color: rgba(0,229,255,.25);
+  color: #9fb3c8;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(0,229,255,.05);
+}
+
+.portal-shell.theme-cyber .kw-tag--deep .kw-tag__dot {
+  background: rgba(0,229,255,.08);
+  color: #5c6f84;
+}
+
+.portal-shell.theme-cyber .kw-tag--shallow .kw-tag__dot {
+  background: rgba(0,229,255,.15);
+  color: #00e5ff;
+}
+
+.portal-shell.theme-cyber .kw-tag:hover {
+  color: #e6f7ff;
+  border-color: rgba(0,229,255,.35);
+  background: rgba(0,229,255,.08);
+  box-shadow: 0 0 16px rgba(0,229,255,.12);
+}
+
+.portal-shell.theme-cyber .kw-tag__dot {
+  background: rgba(0,229,255,.15);
+  color: #00e5ff;
+  font-family: Consolas, monospace;
+}
+
+.portal-shell.theme-cyber .kw-tag:hover .kw-tag__dot {
+  background: #00e5ff;
+  color: #0a0e1a;
+}
+
+.portal-shell.theme-cyber .kw-tag--end {
+  background: #00e5ff;
+  color: #0a0e1a;
+  font-weight: 700;
+  border-color: transparent;
+}
+
+.portal-shell.theme-cyber .kw-tag--end:hover {
+  background: #00f8ff;
+  box-shadow: 0 0 22px rgba(0,229,255,.5);
+}
+
+.portal-shell.theme-cyber .kw-tag--end .kw-tag__dot {
+  background: rgba(10,14,26,.3);
+  color: #0a0e1a;
+}
+
+.portal-shell.theme-cyber .kw-tag--live {
+  border-color: #00e5ff !important;
+  box-shadow: 0 0 0 3px rgba(0,229,255,.35), 0 0 18px rgba(0,229,255,.3) !important;
+  color: #e6f7ff !important;
+  background: rgba(0,229,255,.1) !important;
+}
+
+.portal-shell.theme-cyber .kw-tag--end.kw-tag--live {
+  box-shadow: 0 0 0 4px rgba(0,229,255,.5), 0 0 28px rgba(0,229,255,.5) !important;
+}
+
+/* 连接箭头 */
+.portal-shell.theme-cyber .kw-tag__link {
+  color: rgba(0,229,255,.2);
+}
+
+.portal-shell.theme-cyber .kw-chain:hover .kw-tag__link {
+  color: #00e5ff;
+  opacity: .5;
+}
+
+/* 赛博霓虹：弹窗（teleported to body） */
+body.theme-cyber .explain-popup {
+  background: #0d1322;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 0 1px rgba(0, 229, 255, 0.2), 0 0 40px rgba(0, 229, 255, 0.15);
+}
+
+body.theme-cyber .explain-popup__header {
+  background: rgba(0, 229, 255, 0.06);
+  border-bottom-color: rgba(0, 229, 255, 0.2);
+}
+
+body.theme-cyber .explain-popup__tag {
+  color: #00e5ff;
+  font-family: 'Rajdhani', 'PingFang SC', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+body.theme-cyber .explain-popup__icon {
+  color: #00e5ff;
+}
+
+body.theme-cyber .explain-popup__close:hover {
+  background: rgba(0, 229, 255, 0.12);
+  color: #00e5ff;
+}
+
+body.theme-cyber .explain-popup__body {
+  color: #e6f7ff;
+}
+
+body.theme-cyber .explain-popup__text :deep(strong) {
+  color: #00e5ff;
+}
+
+body.theme-cyber .explain-popup__footer {
+  background: linear-gradient(90deg, #00e5ff, #7c4dff, #ff2d78);
+}
+
+body.theme-cyber .loading-dot {
+  background: #00e5ff;
+}
+
+body.theme-cyber .loading-hint {
+  color: #64748b;
+}
+
+body.theme-cyber .skeleton-line {
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.12) 25%, rgba(0, 229, 255, 0.25) 50%, rgba(0, 229, 255, 0.12) 75%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   漫画波点：关键词面板
+   设计方向：粗黑描边卡片 + 硬投影 + 弹跳交互 + 彩色错落
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 引语栏 */
+.portal-shell.theme-comic .kw-panel__label {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: 14px;
+  letter-spacing: .05em;
+  color: var(--color-ink);
+  text-transform: none;
+}
+
+.portal-shell.theme-comic .kw-panel__dot {
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .kw-panel__count {
+  color: var(--color-accent);
+  font-family: 'Bangers', cursive;
+  font-size: 12px;
+  background: #fff;
+  border: 2px solid var(--color-ink);
+  box-shadow: 2px 2px 0 rgba(26,26,46,.5);
+}
+
+/* 主关键词卡片：粗黑边 + 硬投影 + 弹跳 */
+.portal-shell.theme-comic .kw-main-tag {
+  --_bg: #fff;
+  --_accent: var(--color-accent);
+  --_accent-soft: var(--color-secondary);
+  --_text: var(--color-ink);
+
+  background: var(--_bg);
+  border: 3px solid var(--color-ink);
+  border-radius: 10px;
+  box-shadow: 4px 4px 0 rgba(26,26,46,.7);
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease;
+}
+
+/* 覆盖经典编辑的 nth-child 色彩，漫画用彩色错落 */
+.portal-shell.theme-comic .kw-main-tag:nth-child(8n+1) { --_bg: #fff4c2; }
+.portal-shell.theme-comic .kw-main-tag:nth-child(8n+2) { --_bg: #d9f0ff; }
+.portal-shell.theme-comic .kw-main-tag:nth-child(8n+3) { --_bg: #ffd9d9; }
+.portal-shell.theme-comic .kw-main-tag:nth-child(8n+4) { --_bg: #e0ffe0; }
+.portal-shell.theme-comic .kw-main-tag:nth-child(8n+5) { --_bg: #f0e0ff; }
+.portal-shell.theme-comic .kw-main-tag:nth-child(8n+6) { --_bg: #ffe8d0; }
+.portal-shell.theme-comic .kw-main-tag:nth-child(8n+7) { --_bg: #d0fff0; }
+.portal-shell.theme-comic .kw-main-tag:nth-child(8n+8) { --_bg: #ffe0f0; }
+
+/* 顶部装饰条：漫画版粗黑描边 */
+.portal-shell.theme-comic .kw-main-tag::before {
+  height: 4px;
+  background: var(--color-ink);
+  opacity: .7;
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 2px 0 rgba(26,26,46,.4);
+}
+
+.portal-shell.theme-comic .kw-main-tag:hover::before {
+  opacity: 1;
+  height: 5px;
+  background: var(--color-accent);
+}
+
+.portal-shell.theme-comic .kw-main-tag--on::before {
+  opacity: 1 !important;
+  height: 5px !important;
+  background: #fff !important;
+}
+
+.portal-shell.theme-comic .kw-main-tag:hover {
+  background: #fff;
+  transform: translate(-2px,-3px) rotate(-1deg);
+  box-shadow: 6px 6px 0 rgba(26,26,46,.7), 0 0 0 3px var(--color-secondary);
+}
+
+.portal-shell.theme-comic .kw-main-tag:active {
+  transform: translate(0,0) rotate(0);
+  box-shadow: 2px 2px 0 rgba(26,26,46,.5);
+  transition: transform .06s;
+}
+
+.portal-shell.theme-comic .kw-main-tag__hash {
+  border-right: 2px solid var(--color-ink);
+}
+
+.portal-shell.theme-comic .kw-main-tag__hash-ring {
+  background: #fff;
+  color: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  box-shadow: 2px 2px 0 rgba(26,26,46,.4);
+  font-family: 'Bangers', cursive;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.portal-shell.theme-comic .kw-main-tag__hash:hover .kw-main-tag__hash-ring {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-ink);
+  box-shadow: 3px 3px 0 rgba(26,26,46,.5), 0 0 0 4px var(--color-secondary);
+  transform: scale(1.15) rotate(10deg);
+}
+
+.portal-shell.theme-comic .kw-main-tag__text {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: 14px;
+  color: var(--color-ink);
+  letter-spacing: .04em;
+}
+
+.portal-shell.theme-comic .kw-main-tag__text::after {
+  height: 3px;
+  background: var(--color-accent);
+  opacity: .6;
+}
+
+.portal-shell.theme-comic .kw-main-tag__text:hover {
+  color: var(--color-accent);
+  transform: rotate(-1deg);
+}
+
+.portal-shell.theme-comic .kw-main-tag__caret {
+  border-left: 2px solid var(--color-ink);
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .kw-main-tag__caret:hover {
+  color: var(--color-accent);
+  background: rgba(255,255,255,.5);
+}
+
+.portal-shell.theme-comic .kw-main-tag__caret:hover .kw-main-tag__caret-svg {
+  opacity: 1;
+}
+
+/* 展开态 */
+.portal-shell.theme-comic .kw-main-tag--on {
+  background: var(--color-accent) !important;
+  border-color: var(--color-ink) !important;
+  box-shadow: 5px 5px 0 rgba(26,26,46,.7), 0 0 0 5px var(--color-secondary) !important;
+  animation: comic-card-pop .4s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes comic-card-pop {
+  0% { box-shadow: 3px 3px 0 rgba(26,26,46,.7), 0 0 0 0 var(--color-secondary); }
+  60% { box-shadow: 5px 5px 0 rgba(26,26,46,.7), 0 0 0 12px var(--color-secondary); }
+  100% { box-shadow: 5px 5px 0 rgba(26,26,46,.7), 0 0 0 5px var(--color-secondary); }
+}
+
+.portal-shell.theme-comic .kw-main-tag--on .kw-main-tag__hash-ring {
+  background: #fff;
+  color: var(--color-ink);
+  border-color: var(--color-ink);
+  box-shadow: 3px 3px 0 rgba(26,26,46,.5);
+  transform: rotate(0);
+}
+
+.portal-shell.theme-comic .kw-main-tag--on .kw-main-tag__text {
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(26,26,46,.5);
+  transform: rotate(0);
+}
+
+.portal-shell.theme-comic .kw-main-tag--on .kw-main-tag__caret {
+  color: #fff;
+  border-left-color: var(--color-ink);
+}
+
+/* 链区丝带 */
+.portal-shell.theme-comic .kw-chains {
+  background: #fff;
+  border: 3px solid var(--color-ink);
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 rgba(26,26,46,.7);
+}
+
+/* 头部 */
+.portal-shell.theme-comic .kw-chains__head {
+  border-bottom: 2px dashed var(--color-ink);
+}
+
+.portal-shell.theme-comic .kw-chains__head-icon {
+  color: var(--color-accent);
+  opacity: 1;
+}
+
+.portal-shell.theme-comic .kw-chains__head-title {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: 15px;
+  color: var(--color-ink);
+  letter-spacing: .04em;
+}
+
+.portal-shell.theme-comic .kw-chains__head-steps {
+  background: var(--color-secondary);
+  color: var(--color-ink);
+  font-family: 'Bangers', cursive;
+  font-size: 11px;
+  border: 2px solid var(--color-ink);
+  box-shadow: 1px 1px 0 rgba(26,26,46,.4);
+}
+
+.portal-shell.theme-comic .kw-chains__head-cat {
+  background: var(--color-accent);
+  color: #fff;
+  font-family: 'Bangers', cursive;
+  font-size: 11px;
+  border: 2px solid var(--color-ink);
+  box-shadow: 2px 2px 0 rgba(26,26,46,.5);
+}
+
+/* 底部提示 */
+.portal-shell.theme-comic .kw-chains__hint {
+  color: var(--color-ink);
+  opacity: .4;
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  letter-spacing: .03em;
+  font-size: 11px;
+}
+
+/* 底部进度条 */
+.portal-shell.theme-comic .kw-chains__progress {
+  background: var(--color-ink);
+  height: 4px;
+  opacity: .15;
+  overflow: hidden;
+}
+
+.portal-shell.theme-comic .kw-chains__progress::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  height: auto;
+  background: repeating-linear-gradient(90deg, var(--color-primary) 0 8px, var(--color-secondary) 8px 16px, var(--color-accent) 16px 24px);
+  animation: none;
+  transform: none;
+  width: 100%;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+/* 左侧书脊 */
+.portal-shell.theme-comic .kw-chains::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--color-ink);
+  opacity: 1;
+  border-radius: 0 4px 4px 0;
+}
+
+.portal-shell.theme-comic .kw-chains::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--color-primary) 0 6px, var(--color-secondary) 6px 12px, var(--color-accent) 12px 18px);
+  opacity: 1;
+  border-radius: 0;
+  z-index: 1;
+}
+
+/* 链行 hover */
+.portal-shell.theme-comic .kw-chain:hover {
+  background: rgba(255,244,194,.5);
+  border-left-color: var(--color-accent);
+}
+
+/* 分支标签 */
+.portal-shell.theme-comic .kw-tag {
+  border: 2px solid var(--color-ink);
+  border-radius: 6px;
+  background: #fff;
+  font-weight: 700;
+  color: var(--color-ink);
+  box-shadow: 2px 2px 0 rgba(26,26,46,.6);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease;
+  font-size: 13px;
+  padding: 5px 12px;
+}
+
+/* 深度渐变 */
+.portal-shell.theme-comic .kw-tag--deep {
+  background: #f8f8f8;
+  color: #888;
+  font-size: 11.5px;
+  padding: 4px 10px;
+  box-shadow: 1px 1px 0 rgba(26,26,46,.4);
+}
+
+.portal-shell.theme-comic .kw-tag--shallow {
+  font-size: 14px;
+  box-shadow: 3px 3px 0 rgba(26,26,46,.7);
+}
+
+.portal-shell.theme-comic .kw-tag--deep .kw-tag__dot {
+  border-width: 1.5px;
+  font-size: 9px;
+  background: #eee;
+  box-shadow: 0.5px 0.5px 0 rgba(26,26,46,.3);
+}
+
+.portal-shell.theme-comic .kw-tag--shallow .kw-tag__dot {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-ink);
+  box-shadow: 2px 2px 0 rgba(26,26,46,.5);
+}
+
+.portal-shell.theme-comic .kw-tag:hover {
+  transform: translate(-2px,-3px) rotate(-1deg);
+  box-shadow: 4px 4px 0 rgba(26,26,46,.7);
+  background: #fff4c2;
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .kw-tag:active {
+  transform: translate(0,0) rotate(0);
+  box-shadow: 1px 1px 0 rgba(26,26,46,.5);
+  transition: transform .06s;
+}
+
+.portal-shell.theme-comic .kw-tag__dot {
+  border: 2px solid var(--color-ink);
+  font-family: 'Bangers', cursive;
+  font-size: 11px;
+  background: var(--color-secondary);
+  color: var(--color-ink);
+  box-shadow: 1px 1px 0 rgba(26,26,46,.4);
+}
+
+.portal-shell.theme-comic .kw-tag:hover .kw-tag__dot {
+  background: var(--color-accent);
+  color: #fff;
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.portal-shell.theme-comic .kw-tag--end {
+  background: var(--color-accent);
+  color: #fff;
+  font-family: 'Bangers', 'PingFang SC', cursive;
+  font-size: 14px;
+  letter-spacing: .04em;
+  box-shadow: 3px 3px 0 rgba(26,26,46,.7);
+  border-color: var(--color-ink);
+}
+
+.portal-shell.theme-comic .kw-tag--end:hover {
+  background: var(--color-accent);
+  color: #fff;
+  transform: translate(-3px,-4px) rotate(0);
+  box-shadow: 5px 5px 0 rgba(26,26,46,.7);
+}
+
+.portal-shell.theme-comic .kw-tag--end .kw-tag__dot {
+  background: rgba(255,255,255,.3);
+  color: #fff;
+  border-color: #fff;
+}
+
+.portal-shell.theme-comic .kw-tag--live {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--color-ink) !important;
+  background: #fff !important;
+  color: var(--color-ink) !important;
+}
+
+.portal-shell.theme-comic .kw-tag--end.kw-tag--live {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--color-accent) !important;
+}
+
+/* 连接箭头 */
+.portal-shell.theme-comic .kw-tag__link {
+  color: var(--color-ink);
+  opacity: .35;
+  width: 20px;
+}
+
+.portal-shell.theme-comic .kw-chain:hover .kw-tag__link {
+  opacity: .7;
+  transform: translateX(3px);
+}
+
+/* 漫画波点：弹窗（teleported to body） */
+body.theme-comic .explain-popup {
+  background: #fffdf5;
+  border: 3px solid var(--color-ink);
+  border-radius: 10px;
+  box-shadow: 8px 8px 0 rgba(26, 26, 46, 0.85);
+}
+
+body.theme-comic .explain-popup__header {
+  background: #ffd23f;
+  border-bottom: 3px solid var(--color-ink);
+}
+
+body.theme-comic .explain-popup__header-inner {
+  font-family: 'Bangers', 'PingFang SC', cursive;
+}
+
+body.theme-comic .explain-popup__tag {
+  font-size: 17px;
+  letter-spacing: 0.05em;
+  color: var(--color-ink);
+}
+
+body.theme-comic .explain-popup__icon {
+  color: var(--color-ink);
+}
+
+body.theme-comic .explain-popup__close {
+  border: 2px solid var(--color-ink);
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 2px 2px 0 rgba(26, 26, 46, 0.7);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body.theme-comic .explain-popup__close:hover {
+  transform: scale(1.15);
+  box-shadow: 3px 3px 0 rgba(26, 26, 46, 0.7);
+  background: var(--color-accent);
+  color: #fff;
+}
+
+body.theme-comic .explain-popup__body {
+  color: var(--color-ink);
+}
+
+body.theme-comic .explain-popup__text :deep(strong) {
+  color: var(--color-accent);
+}
+
+body.theme-comic .explain-popup__footer {
+  height: 5px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-primary) 0 8px,
+    var(--color-secondary) 8px 16px,
+    var(--color-accent) 16px 24px
+  );
+}
+
+body.theme-comic .loading-dot {
+  background: var(--color-accent);
+}
+
+body.theme-comic .loading-hint {
+  color: var(--color-ink-3);
+  font-weight: 700;
+}
+
+body.theme-comic .skeleton-line {
+  background: linear-gradient(90deg, var(--color-rule) 25%, var(--color-secondary) 50%, var(--color-rule) 75%);
+}
+
+/* ============================================================
+ * 山水墨韵 Shan Shui：宣纸水墨 + 朱砂钤印 + 赭金装裱
+ * 参考 info/61-shan-shui.html：纸色 oklch(93% 0.02 85)、
+ * 墨色分层、朱砂 accent、宋体/行书字体、钤印与金线。
+ * ============================================================ */
+.theme-shan-shui {
+  font-family: var(--font-body);
+  --color-primary: #8c3b2e;
+  --color-primary-dark: #6f2a20;
+  --color-primary-soft: #f2e3d7;
+  --color-secondary: #a8843c;
+  --color-accent: #b3342a;
+  --color-accent-soft: #f5ddd5;
+  --color-focus: #b3342a;
+  --color-bg: #f2ead9;
+  --color-surface: #faf5ea;
+  --color-text: #2b2620;
+  --color-text-secondary: #5c5246;
+  --color-text-muted: #8a7e6d;
+  --color-border: #d8c9ad;
+  --color-danger: #a3241d;
+  --color-success: #5c7a4d;
+
+  --color-paper: #f7f1e3;
+  --color-paper-2: #efe5d0;
+  --color-ink: #2b2620;
+  --color-ink-2: #5c5246;
+  --color-ink-3: #8a7e6d;
+  --color-rule: #d8c9ad;
+  --color-rule-strong: #b9a57f;
+  --color-accent-2: #a8843c;
+  --color-accent-2-soft: #eadfc4;
+  --color-gold: #c9a86a;
+
+  --font-heading: 'Zhi Mang Xing', 'Ma Shan Zheng', 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+  --font-body: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+  --font-outlier: 'Ma Shan Zheng', 'Zhi Mang Xing', 'Noto Serif SC', serif;
+
+  --rule: 1px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --shadow-card: 0 1px 0 rgba(201, 168, 106, 0.22), 0 6px 18px rgba(43, 38, 32, 0.06);
+  --shadow-float: 0 8px 24px rgba(43, 38, 32, 0.12);
+
+  --color-footer-bg: #26211b;
+  --color-footer-text: #9a8f7d;
+  --color-footer-strong: #f7f1e3;
+  --color-footer-link-hover: #c9a86a;
+
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* 外壳：宣纸噪点纹理（内容下层） */
+.portal-shell.theme-shan-shui {
+  isolation: isolate;
+}
+
+.portal-shell.theme-shan-shui::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='paper'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/></filter><rect width='240' height='240' filter='url(%23paper)'/></svg>");
+}
+
+/* ---- 卷首题签：报头 ---- */
+.portal-shell.theme-shan-shui .masthead {
+  background: var(--color-paper-2);
+  border-bottom: 1px solid var(--color-gold);
+  box-shadow: 0 1px 0 rgba(201, 168, 106, 0.25);
+}
+
+.portal-shell.theme-shan-shui .brand__logo rect {
+  fill: var(--color-accent);
+  rx: 4;
+}
+
+.portal-shell.theme-shan-shui .brand__text {
+  font-family: var(--font-outlier);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+/* 品牌名后的朱砂小印 */
+.portal-shell.theme-shan-shui .brand__text::after {
+  content: '文';
+  display: inline-block;
+  margin-left: 10px;
+  padding: 0 6px;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  font-size: 12px;
+  letter-spacing: 0;
+  transform: rotate(-3deg);
+}
+
+.portal-shell.theme-shan-shui .search-box {
+  border-bottom-color: var(--color-rule-strong);
+}
+
+.portal-shell.theme-shan-shui .search-box:focus-within {
+  border-color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .search-box button:hover {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.portal-shell.theme-shan-shui .user-btn .el-avatar {
+  border: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .masthead__nav {
+  background: var(--color-paper-2);
+  border-top: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .masthead__nav a {
+  font-family: var(--font-body);
+  letter-spacing: 0.12em;
+  color: var(--color-ink-2);
+}
+
+.portal-shell.theme-shan-shui .masthead__nav a:hover {
+  color: var(--color-accent);
+  background: rgba(179, 52, 42, 0.05);
+}
+
+.portal-shell.theme-shan-shui .masthead__nav a.active {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .masthead__nav a.active::after {
+  background: var(--color-accent);
+}
+
+/* ---- 登录 / 注册：钤印式按钮 ---- */
+.portal-shell.theme-shan-shui .link-btn {
+  border: 1px solid var(--color-rule-strong);
+  border-radius: 2px;
+}
+
+.portal-shell.theme-shan-shui .link-btn:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .link-btn--solid {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-paper);
+}
+
+.portal-shell.theme-shan-shui .link-btn--solid:hover {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: var(--color-paper);
+}
+
+/* ---- 公告：装裱题签 ---- */
+.portal-shell.theme-shan-shui .notice {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-gold);
+  border-left: 3px solid var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .notice__label {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  letter-spacing: 0.18em;
+}
+
+.portal-shell.theme-shan-shui .notice__text {
+  color: var(--color-ink-2);
+}
+
+/* ---- 头条：卷首画心 ---- */
+.portal-shell.theme-shan-shui .lead__story {
+  position: relative;
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-gold);
+  box-shadow: inset 0 0 0 1px rgba(201, 168, 106, 0.35), 0 8px 24px rgba(43, 38, 32, 0.08);
+}
+
+.portal-shell.theme-shan-shui .lead__story::before {
+  content: '卷首';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 2px 8px;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  transform: rotate(-2deg);
+}
+
+.portal-shell.theme-shan-shui .lead__kicker {
+  color: var(--color-accent);
+  border-bottom: 1px solid var(--color-accent);
+  letter-spacing: 0.18em;
+}
+
+.portal-shell.theme-shan-shui .lead__title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+.portal-shell.theme-shan-shui .lead__summary {
+  color: var(--color-ink-2);
+}
+
+.portal-shell.theme-shan-shui .lead__meta {
+  color: var(--color-ink-3);
+}
+
+.portal-shell.theme-shan-shui .lead__cover {
+  border: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .lead__cover--placeholder {
+  background: var(--color-paper-2);
+  color: var(--color-accent);
+  font-family: var(--font-heading);
+}
+
+.portal-shell.theme-shan-shui .lead__mask {
+  background: linear-gradient(180deg, rgba(43, 38, 32, 0) 30%, rgba(43, 38, 32, 0.82));
+}
+
+.portal-shell.theme-shan-shui .lead__mask h2 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+.portal-shell.theme-shan-shui .lead__carousel {
+  border: 1px solid var(--color-gold);
+  box-shadow: 0 8px 24px rgba(43, 38, 32, 0.08);
+}
+
+.portal-shell.theme-shan-shui .el-carousel__indicator .el-carousel__button {
+  background: var(--color-ink-3);
+}
+
+.portal-shell.theme-shan-shui .el-carousel__indicator--active .el-carousel__button {
+  background: var(--color-accent);
+}
+
+/* ---- 首页两栏：宣纸笺面 ---- */
+.portal-shell.theme-shan-shui .home__grid section,
+.portal-shell.theme-shan-shui .home__grid aside {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .index-section__head {
+  border-bottom: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .index-section__head h2,
+.portal-shell.theme-shan-shui .section__head h2 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.16em;
+}
+
+.portal-shell.theme-shan-shui .index-section__head h2::before,
+.portal-shell.theme-shan-shui .section__head h2::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 0.95em;
+  margin-right: 10px;
+  background: var(--color-accent);
+  vertical-align: -0.12em;
+}
+
+.portal-shell.theme-shan-shui .section__desc {
+  color: var(--color-ink-2);
+}
+
+.portal-shell.theme-shan-shui .section__more {
+  color: var(--color-accent);
+  border-bottom: 1px solid var(--color-accent);
+}
+
+/* ---- 最新发布：行书列表 ---- */
+.portal-shell.theme-shan-shui .story-list__link {
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-shan-shui .story-list__link:hover {
+  color: var(--color-accent);
+  background: var(--color-paper-2);
+}
+
+.portal-shell.theme-shan-shui .story-list__tag {
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: 2px;
+}
+
+.portal-shell.theme-shan-shui .story-list__time {
+  color: var(--color-ink-3);
+}
+
+/* ---- 热门排行：题签数字 ---- */
+.portal-shell.theme-shan-shui .rank-list__no {
+  font-family: var(--font-heading);
+  color: var(--color-ink-3);
+}
+
+.portal-shell.theme-shan-shui .rank-list__no--top {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .rank-list a:hover {
+  background: var(--color-paper-2);
+}
+
+.portal-shell.theme-shan-shui .rank-list__views {
+  color: var(--color-ink-3);
+}
+
+/* ---- 文章卡：画心小卷 ---- */
+.portal-shell.theme-shan-shui .article-card {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-rule);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(201, 168, 106, 0.18), 0 6px 18px rgba(43, 38, 32, 0.05);
+}
+
+.portal-shell.theme-shan-shui .article-card:hover {
+  border-color: var(--color-gold);
+  box-shadow: 0 1px 0 var(--color-gold), 0 8px 22px rgba(43, 38, 32, 0.08);
+  transform: translateY(-2px);
+}
+
+.portal-shell.theme-shan-shui .article-card__title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+.portal-shell.theme-shan-shui .article-card__title a:hover {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .article-card__meta {
+  color: var(--color-ink-3);
+}
+
+.portal-shell.theme-shan-shui .article-card__cover {
+  border: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .article-card__cover--placeholder {
+  background: var(--color-paper-2);
+  color: var(--color-accent);
+  font-family: var(--font-heading);
+}
+
+/* ---- 栏目 / 搜索页 ---- */
+.portal-shell.theme-shan-shui .cat-head,
+.portal-shell.theme-shan-shui .page-head {
+  border-bottom: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .cat-head h1,
+.portal-shell.theme-shan-shui .page-head__title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+}
+
+.portal-shell.theme-shan-shui .sort-bar button {
+  color: var(--color-ink-2);
+}
+
+.portal-shell.theme-shan-shui .sort-bar button:hover {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .sort-bar button.active {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .sort-bar button.active::after {
+  background: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .city-banner {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-gold);
+  border-left: 3px solid var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .recommend-card {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-rule);
+  border-radius: 2px;
+}
+
+.portal-shell.theme-shan-shui .recommend-card:hover {
+  border-color: var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .recommend-card__title a {
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-shan-shui .recommend-card__title a:hover {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .recommend-card__summary {
+  color: var(--color-ink-2);
+}
+
+.portal-shell.theme-shan-shui .tag {
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: 2px;
+}
+
+.portal-shell.theme-shan-shui .empty {
+  color: var(--color-ink-3);
+}
+
+/* ---- 文稿详情：长卷阅读页 ---- */
+.portal-shell.theme-shan-shui .detail__doc {
+  background: var(--color-paper);
+  border: 1px solid var(--color-gold);
+  box-shadow: inset 0 0 0 1px rgba(201, 168, 106, 0.22);
+}
+
+.portal-shell.theme-shan-shui .detail__title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+.portal-shell.theme-shan-shui .detail__lead {
+  border-left-color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .detail__crumb a:hover {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .detail__cover {
+  border: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .detail__meta {
+  color: var(--color-ink-3);
+}
+
+.portal-shell.theme-shan-shui .detail__author {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .action-btn {
+  border-color: var(--color-rule-strong);
+  border-radius: 2px;
+}
+
+.portal-shell.theme-shan-shui .action-btn:hover:not(:disabled) {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .action-btn--active {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .comments {
+  border-top-color: var(--color-ink);
+}
+
+.portal-shell.theme-shan-shui .comments__title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+.portal-shell.theme-shan-shui .comment__reply-composer,
+.portal-shell.theme-shan-shui .comment__replies {
+  background: var(--color-primary-soft);
+  border-color: var(--color-rule);
+}
+
+.portal-shell.theme-shan-shui .comment__del:hover {
+  color: var(--color-danger);
+}
+
+.portal-shell.theme-shan-shui .comments__login-tip {
+  border-color: var(--color-rule-strong);
+}
+
+.portal-shell.theme-shan-shui .related {
+  background: var(--color-paper-2);
+  border-color: var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .related__title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  border-bottom-color: var(--color-ink);
+}
+
+.portal-shell.theme-shan-shui .related__cat {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.portal-shell.theme-shan-shui .related__thumb {
+  background: var(--color-paper);
+  border: 1px solid var(--color-gold);
+}
+
+/* ---- 关键词知识链 ---- */
+.portal-shell.theme-shan-shui .kw-main-tag {
+  --_bg: var(--color-paper-2);
+  --_accent: var(--color-accent);
+  --_accent-soft: var(--color-accent-soft);
+  --_text: var(--color-ink);
+  --_divider: var(--color-rule);
+  background: var(--_bg);
+  border: 1px solid var(--color-rule-strong);
+  box-shadow: 0 1px 0 rgba(201, 168, 106, 0.22);
+}
+
+.portal-shell.theme-shan-shui .kw-main-tag:nth-child(8n+1),
+.portal-shell.theme-shan-shui .kw-main-tag:nth-child(8n+2),
+.portal-shell.theme-shan-shui .kw-main-tag:nth-child(8n+3),
+.portal-shell.theme-shan-shui .kw-main-tag:nth-child(8n+4),
+.portal-shell.theme-shan-shui .kw-main-tag:nth-child(8n+5),
+.portal-shell.theme-shan-shui .kw-main-tag:nth-child(8n+6),
+.portal-shell.theme-shan-shui .kw-main-tag:nth-child(8n+7),
+.portal-shell.theme-shan-shui .kw-main-tag:nth-child(8n+8) {
+  --_bg: var(--color-paper-2);
+  --_accent: var(--color-accent);
+  --_accent-soft: var(--color-accent-soft);
+}
+
+.portal-shell.theme-shan-shui .kw-main-tag:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.portal-shell.theme-shan-shui .kw-main-tag--on {
+  background: var(--color-paper) !important;
+  box-shadow: 0 0 0 2px var(--color-accent), 0 8px 20px rgba(43, 38, 32, 0.1) !important;
+}
+
+.portal-shell.theme-shan-shui .kw-main-tag__hash-ring {
+  background: var(--color-accent);
+  color: var(--color-paper);
+  border: 1px solid var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .kw-main-tag__text {
+  color: var(--color-ink);
+}
+
+.portal-shell.theme-shan-shui .kw-main-tag__text::after {
+  background: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .kw-main-tag__text:hover {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .kw-main-tag__caret {
+  color: var(--color-ink-3);
+  border-left: 1px solid var(--color-rule);
+}
+
+.portal-shell.theme-shan-shui .kw-chains {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .kw-chains__head {
+  border-bottom: 1px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .kw-chains__head-title {
+  color: var(--color-ink);
+  font-family: var(--font-heading);
+}
+
+.portal-shell.theme-shan-shui .kw-chains__head-cat {
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .kw-tag {
+  background: var(--color-paper);
+  border: 1px solid var(--color-rule-strong);
+  color: var(--color-ink-2);
+}
+
+.portal-shell.theme-shan-shui .kw-tag:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .kw-tag--end {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.portal-shell.theme-shan-shui .kw-tag__link {
+  color: var(--color-ink-3);
+}
+
+/* ---- 页脚：墨色落款 ---- */
+.portal-shell.theme-shan-shui .colophon {
+  background: var(--color-footer-bg);
+  border-top: 2px solid var(--color-gold);
+}
+
+.portal-shell.theme-shan-shui .colophon strong {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--color-footer-strong);
+}
+
+.portal-shell.theme-shan-shui .colophon p {
+  color: var(--color-footer-text);
+}
+
+.portal-shell.theme-shan-shui .colophon__links a {
+  color: var(--color-footer-text);
+}
+
+.portal-shell.theme-shan-shui .colophon__links a:hover {
+  color: var(--color-footer-link-hover);
+}
+
+.portal-shell.theme-shan-shui .colophon__inner::before {
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+}
+
+/* ---- body 浮层：Element Plus 弹层 / 关键词解释 / AI 助手 ---- */
+body.theme-shan-shui .el-dropdown__popper {
+  border: 1px solid var(--color-gold);
+  box-shadow: 0 10px 28px rgba(43, 38, 32, 0.14);
+}
+
+body.theme-shan-shui .el-dropdown-menu {
+  background: var(--color-surface);
+}
+
+body.theme-shan-shui .el-dropdown-menu__item:not(.is-disabled):focus,
+body.theme-shan-shui .el-dropdown-menu__item:not(.is-disabled):hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+body.theme-shan-shui .el-dropdown-menu__item--divided {
+  border-top-color: var(--color-rule);
+}
+
+body.theme-shan-shui .el-popper__arrow::before {
+  background: var(--color-surface);
+  border-color: var(--color-gold);
+}
+
+body.theme-shan-shui .el-input__wrapper,
+body.theme-shan-shui .el-textarea__inner {
+  background: var(--color-surface);
+  box-shadow: 0 0 0 1px var(--color-rule-strong) inset;
+}
+
+body.theme-shan-shui .el-input__wrapper.is-focus,
+body.theme-shan-shui .el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--color-accent) inset;
+}
+
+body.theme-shan-shui .el-button--primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+body.theme-shan-shui .el-button--primary:hover {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+body.theme-shan-shui .explain-popup {
+  background: var(--color-paper);
+  border: 1px solid var(--color-gold);
+  box-shadow: 0 10px 30px rgba(43, 38, 32, 0.14);
+}
+
+body.theme-shan-shui .explain-popup__header {
+  background: var(--color-paper-2);
+  border-bottom: 1px solid var(--color-gold);
+}
+
+body.theme-shan-shui .explain-popup__icon {
+  color: var(--color-accent);
+}
+
+body.theme-shan-shui .explain-popup__tag {
+  color: var(--color-ink);
+  font-family: var(--font-heading);
+}
+
+body.theme-shan-shui .explain-popup__body {
+  color: var(--color-ink-2);
+}
+
+body.theme-shan-shui .explain-popup__text :deep(strong) {
+  color: var(--color-accent);
+}
+
+body.theme-shan-shui .explain-popup__close {
+  color: var(--color-ink-3);
+}
+
+body.theme-shan-shui .explain-popup__close:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+body.theme-shan-shui .explain-popup__footer {
+  background: var(--color-gold);
+}
+
+body.theme-shan-shui .loading-dot {
+  background: var(--color-accent);
+}
+
+body.theme-shan-shui .loading-hint {
+  color: var(--color-ink-2);
+}
+
+body.theme-shan-shui .skeleton-line {
+  background: linear-gradient(90deg, var(--color-rule) 25%, var(--color-gold) 50%, var(--color-rule) 75%);
+}
+
+body.theme-shan-shui .ai-summary-fab {
+  --ai-fab-bg: var(--color-accent);
+  --ai-fab-border: var(--color-accent);
+  --ai-fab-text: var(--color-paper);
+  --ai-fab-hover-bg: var(--color-paper);
+  --ai-fab-hover-text: var(--color-accent);
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px var(--color-gold), 0 8px 20px rgba(43, 38, 32, 0.14);
+}
+
+body.theme-shan-shui .ai-summary-panel {
+  border-color: var(--color-gold);
+  box-shadow: 0 10px 30px rgba(43, 38, 32, 0.14), inset 0 0 0 1px rgba(201, 168, 106, 0.22);
+}
+
+body.theme-shan-shui .ai-summary-panel__head {
+  border-bottom-color: var(--color-gold);
+}
+
+body.theme-shan-shui .ai-summary-panel__mark {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+body.theme-shan-shui .ai-summary-panel__selection {
+  border-left-color: var(--color-accent);
+  background: var(--color-primary-soft);
+}
+
+body.theme-shan-shui .ai-summary-panel__retry {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}

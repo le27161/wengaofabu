@@ -1,0 +1,345 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: 文稿综合评分1
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.19@1aa3c64e2f50179afe8410ad79412dab92bf5919a27da8e2b13071b5e5f8ce81
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: 1786845294061-source-1786845414725-target
+      selected: false
+      source: '1786845294061'
+      sourceHandle: source
+      target: '1786845414725'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 1786845414725-source-1786845469948-target
+      selected: false
+      source: '1786845414725'
+      sourceHandle: source
+      target: '1786845469948'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1786846257254-source-1786846388508-target
+      source: '1786846257254'
+      sourceHandle: source
+      target: '1786846388508'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: llm
+      id: 1786845469948-source-1786846257254-target
+      source: '1786845469948'
+      sourceHandle: source
+      target: '1786846257254'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: article_title
+          options: []
+          placeholder: ''
+          required: true
+          type: paragraph
+          variable: article_title
+        - default: ''
+          hint: ''
+          label: article_content
+          options: []
+          placeholder: ''
+          required: true
+          type: paragraph
+          variable: article_content
+      height: 134
+      id: '1786845294061'
+      position:
+        x: 71
+        y: 261
+      positionAbsolute:
+        x: 71
+        y: 261
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: a6e10014-482b-48c3-8b87-5dd98323396e
+          role: system
+          text: "你是文稿分析专家，只做客观要素提取，不做打分。\n\n严格按照JSON格式输出，禁止额外解释、禁止markdown，只返回JSON。\n\
+            输出字段：\n{\n  \"title_core_subject\": \"标题的核心主题是什么\",\n  \"title_key_elements\"\
+            : [\"标题中关键名词、事件、观点、数字对象列表\"],\n  \"title_emotion_stance\": \"标题的情绪立场：客观/正面/负面/夸张煽动\"\
+            ,\n  \"article_core_theme\": \"文章正文的核心主旨，一句话概括\",\n  \"article_main_elements\"\
+            : [\"正文重点论述的关键对象、事件列表\"],\n  \"article_emotion_stance\": \"正文的情绪立场：客观/正面/负面/夸张煽动\"\
+            \n}"
+        - id: 4a7d8880-1986-4798-9b71-cedb050940a4
+          role: user
+          text: '输入标题：{{#1786845294061.article_title#}}
+
+            输入正文：{{#1786845294061.article_content#}}
+
+            '
+        reasoning_format: separated
+        selected: false
+        structured_output_enabled: true
+        title: 要素解析器
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1786845414725'
+      position:
+        x: 382
+        y: 282
+      positionAbsolute:
+        x: 382
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 072ad974-a75c-4910-9ccf-767b6e136fdf
+          role: system
+          text: "# 任务：根据已经解析好的标题正文要素，完成标题‑内容适配度分项打分\n\n\n评分规则：\n1. 共4个维度，每个维度给出【0到该维度最大权重之间的整数分数】，不能超过权重上限，不能为负数。\n\
+            维度1：主题核心一致性，权重上限40分；评判：标题核心主题是否是正文的核心，完全匹配40；部分匹配20；完全不匹配0。\n维度2：关键信息匹配度，权重上限30分；评判：标题的关键要素是否正文真实存在；识别标题党、捏造信息、夸大渲染；要素全部存在30；部分存在10‑20；完全捏造0。\n\
+            维度3：叙事范围匹配度，权重上限20分；评判：标题划定的对象、场景，正文是否大量跑题写无关内容；范围完全匹配20；少量无关10；大量跑偏0。\n\
+            维度4：立场情绪一致性，权重上限10分；评判标题情绪立场和正文是否冲突；完全一致10；轻微冲突5；严重冲突0。\n\n2. 每个维度必须写清楚简短的评分理由，客观陈述事实，不要主观臆断。\n\
+            \n严格输出JSON，禁止多余文字。输出结构：\n{\n  \"dim1_score\": 整数,\n  \"dim1_reason\":\
+            \ \"维度1理由\",\n  \"dim2_score\": 整数,\n  \"dim2_reason\": \"维度2理由\",\n \
+            \ \"dim3_score\": 整数,\n  \"dim3_reason\": \"维度3理由\",\n  \"dim4_score\"\
+            : 整数,\n  \"dim4_reason\": \"维度4理由\"\n}"
+        - id: 980b893a-710a-4d68-b7b5-d1125d2ea698
+          role: user
+          text: 解析结果：{{#1786845414725.text#}}
+        reasoning_format: separated
+        selected: false
+        structured_output:
+          schema:
+            additionalProperties: false
+            properties:
+              dim1_reason:
+                type: string
+              dim1_score:
+                type: number
+              dim2_reason:
+                type: string
+              dim2_score:
+                type: number
+              dim3_reason:
+                type: string
+              dim3_score:
+                type: number
+              dim4_reason:
+                type: string
+              dim4_score:
+                type: number
+            required:
+            - dim1_score
+            - dim1_reason
+            - dim2_score
+            - dim2_reason
+            - dim3_score
+            - dim3_reason
+            - dim4_score
+            - dim4_reason
+            type: object
+        structured_output_enabled: true
+        title: 多维度分项评分器
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1786845469948'
+      position:
+        x: 685
+        y: 282
+      positionAbsolute:
+        x: 685
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-v4-flash
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: e745e7a0-ab8d-404e-a46f-c4fc83236049
+          role: system
+          text: "你是文稿审核专家，基于下面解析结果和分项打分数据，生成完整可读评估报告。\n\n\n总分区间说明：\n80‑100：标题与正文高度适配，概括精准；\n\
+            60‑79：基本适配，存在小瑕疵；\n40‑59：适配较差，存在明显文不对题；\n0‑39：严重不匹配，疑似标题党。\n\n输出内容要求：\n\
+            1. 综合等级（根据总分输出）\n2. 整体总结：一句话概括标题和正文适配情况\n3. 现存问题清单：逐条列出问题，没有问题写[\"无明显问题\"\
+            ]\n4. 标题优化建议：给出1‑3条可落地修改建议，如果标题很好，则说明无需修改。\n\n输出JSON格式，禁止多余解释，不要markdown。\n\
+            输出字段按照以下模板：\n{[\n                {\"维度\": \"标题与正文适配程度\", \"得分\": \"15/20\"\
+            , \"建议\": \"标题与正文匹配程度高\"},\n                {\"维度\": \"用语规范\", \"得分\"\
+            : \"10/20\", \"建议\": \"文稿用语偏口语化\"},\n            ],\n            \"总分\"\
+            : \"80/100\"}"
+        - id: 1dcdeba2-127f-4f5c-aaa4-b39044e2f5f5
+          role: user
+          text: '要素解析结果：{{#1786845414725.text#}}
+
+            校验后的打分数据：{{#1786845469948.text#}}'
+        reasoning_format: separated
+        selected: true
+        structured_output_enabled: true
+        title: LLM 3
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1786846257254'
+      position:
+        x: 1082.905411728718
+        y: 282
+      positionAbsolute:
+        x: 1082.905411728718
+        y: 282
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        outputs:
+        - value_selector:
+          - '1786846257254'
+          - text
+          value_type: string
+          variable: text
+        selected: false
+        title: 输出
+        type: end
+      height: 87
+      id: '1786846388508'
+      position:
+        x: 1467
+        y: 282
+      positionAbsolute:
+        x: 1467
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    viewport:
+      x: -37.90551382605361
+      y: 137.33824126395757
+      zoom: 0.47742079611089994
+  rag_pipeline_variables: []

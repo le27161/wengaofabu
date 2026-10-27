@@ -1,0 +1,94 @@
+/* 设计令牌：与 ui-ux-pro-max 设计系统一致（新闻门户 · 编辑风） */
+:root {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-primary-soft: #dbeafe;
+  --color-secondary: #3b82f6;
+  --color-accent: #f97316;
+  --color-accent-soft: #ffedd5;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-border: #e2e8f0;
+  --color-danger: #dc2626;
+  --color-success: #16a34a;
+
+  --font-heading: 'Newsreader', 'Songti SC', 'STSong', 'SimSun', serif;
+  --font-body: 'Roboto', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-card: 0 1px 3px rgba(30, 41, 59, 0.06), 0 4px 14px rgba(30, 41, 59, 0.05);
+  --shadow-float: 0 10px 30px rgba(30, 41, 59, 0.12);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --container-max: 1200px;
+  --z-header: 100;
+  --z-nav: 90;
+  --z-dialog: 1000;
+}
+
+/* ============================================================
+ * 门户编辑风扩展 token（design.md 锁定 · 2026-08-10）
+ * 既有 token 全部保留，后台页面不受影响。
+ * ============================================================ */
+:root {
+  /* 编辑风 · 语义色（OKLCH，与品牌 hex 视觉一致） */
+  --color-paper: oklch(100% 0 0);
+  --color-paper-2: oklch(98.5% 0.002 257);
+  --color-ink: oklch(27.8% 0.03 257);
+  --color-ink-2: oklch(55.6% 0.03 257);
+  --color-ink-3: oklch(70.8% 0.02 257);
+  --color-rule: oklch(93.2% 0.01 257);
+  --color-rule-strong: oklch(85% 0.015 257);
+  --color-accent-2: oklch(64.5% 0.17 29);
+  --color-accent-2-soft: oklch(94.5% 0.05 60);
+
+  /* 编辑风 · 字号刻度 */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 3rem;
+  --text-display: clamp(2.25rem, 5vw + 1rem, 3.5rem);
+
+  /* 编辑风 · 行高与字距 */
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-loose: 1.85;
+  --tracking-tight: -0.02em;
+
+  /* 编辑风 · 动效（禁止默认 ease，只动 transform/opacity） */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-slow: 320ms;
+
+  /* 编辑风 · 布局 */
+  --rule: 1px;
+  --size-touch: 44px;
+  --header-h: 68px;
+  --measure: 65ch;
+
+  /* 编辑风 · 页脚语义色（主题可覆盖） */
+  --color-footer-bg: var(--color-ink);
+  --color-footer-text: var(--color-ink-3);
+  --color-footer-strong: var(--color-paper);
+  --color-footer-link-hover: var(--color-paper);
+}

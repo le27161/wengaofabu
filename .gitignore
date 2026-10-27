@@ -1,0 +1,37 @@
+# 环境配置（含数据库密码与 JWT 密钥，勿提交；模板 .env.example 保留）
+backend/.env
+.env
+.env.*
+!backend/.env.example
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+.vite/
+.hallmark/
+
+# IDE
+.idea/
+.vscode/
+
+# 日志与运行产物
+*.log
+backend/uploads/
+
+# 模型权重文件（体积大，不入库；由开发者本地放置或共享盘同步）
+backend/app/aiVectorizationModel/model/vectorization-model/model.safetensors
+backend/app/aimodel/model/bert_model.pt
+backend/app/multilingual-e5-small/model.safetensors
+backend/app/aimodel/model/bert-base-chinese/model.safetensors
+*.safetensors
+*.bin
+*.pt
+# 临时输出
+backend/temp_db_out.txt

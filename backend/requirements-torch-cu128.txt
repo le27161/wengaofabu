@@ -1,0 +1,4 @@
+# Windows + NVIDIA RTX 50（Blackwell）使用独立PyTorch官方索引安装。
+# 请先安装本文件，再安装requirements.txt，避免普通PyPI构建覆盖已验证的cu128版本。
+--index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0+cu128

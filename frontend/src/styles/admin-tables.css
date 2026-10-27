@@ -1,0 +1,329 @@
+/* ============================================================
+ * 后台管理表格通用样式（文稿 / 资源 / 栏目 / 渠道）
+ * 设计规范：ui-ux-pro-max · Data-Dense Dashboard · Flat + 语义状态
+ * 统一：页头（图标+标题+副标题+动作）、表格卡片、状态徽章、图标操作
+ * ============================================================ */
+
+/* ---- 页面头 ---- */
+.admin-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.admin-head__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 22px;
+}
+
+.admin-head__text {
+  min-width: 0;
+}
+
+.admin-head__title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.admin-head__sub {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.admin-head__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ---- 数量徽章 ---- */
+.admin-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.admin-count strong {
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 表格卡片 ---- */
+.admin-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.admin-card__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-paper);
+}
+
+/* Element Plus 表格细化（后台全局统一；admin-card 内外都生效） */
+.admin-layout .el-table {
+  --el-table-header-bg-color: var(--color-paper-2);
+  --el-table-header-text-color: var(--color-text-secondary);
+  --el-table-row-hover-bg-color: var(--color-primary-soft);
+  --el-table-border-color: var(--color-border);
+  --el-table-expanded-cell-bg-color: var(--color-paper);
+  --el-table-bg-color: var(--color-surface);
+  --el-table-tr-bg-color: var(--color-surface);
+  --el-table-current-row-bg-color: var(--color-primary-soft);
+}
+
+.admin-layout .el-table th.el-table__cell {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  background: var(--color-paper-2);
+}
+
+.admin-layout .el-table td.el-table__cell {
+  font-size: 14px;
+}
+
+/* 展开行（AI 调用记录等）在卡片内右对齐，避免贴边 */
+.admin-layout .el-table__expanded-cell {
+  padding: 12px 20px;
+}
+
+/* 卡片工具条别名：非四表页面搜索/筛选区也统一放卡片头部 */
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-paper);
+}
+
+/* el-tabs 内的表格卡片间距 */
+.el-tab-pane .admin-card {
+  margin-top: 2px;
+}
+
+/* ---- 状态徽章（圆点 + 文字，不只靠颜色区分） ---- */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.status-badge::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.status-badge--gray { background: #f1f5f9; color: #64748b; }
+.status-badge--blue { background: #dbeafe; color: #1d4ed8; }
+.status-badge--green { background: #dcfce7; color: #15803d; }
+.status-badge--orange { background: #ffedd5; color: #c2410c; }
+.status-badge--red { background: #fee2e2; color: #b91c1c; }
+.status-badge--violet { background: #ede9fe; color: #6d28d9; }
+
+/* ---- 行内标题（主标题 + 副信息） ---- */
+.cell-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cell-title__main {
+  min-width: 0;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell-title__sub {
+  min-width: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- 缩略图 ---- */
+.cell-thumb {
+  width: 88px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.cell-thumb--empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-paper-2);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* 主列组合：缩略图 + 文字 */
+.cell-media {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* ---- 小标签（栏目等） ---- */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.mini-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 5px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.mini-tag--empty {
+  background: var(--color-paper-2);
+  color: var(--color-text-muted);
+}
+
+.mini-tag--gray { background: #f1f5f9; color: #64748b; }
+.mini-tag--green { background: #dcfce7; color: #15803d; }
+.mini-tag--blue { background: #dbeafe; color: #1d4ed8; }
+.mini-tag--violet { background: #ede9fe; color: #6d28d9; }
+.mini-tag--orange { background: #ffedd5; color: #c2410c; }
+
+/* ---- 统计数据行（浏览/点赞等） ---- */
+.stat-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.stat-line__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 操作列 ---- */
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: nowrap;
+}
+
+.row-actions .el-button {
+  margin: 0;
+  padding: 4px 6px;
+}
+
+.row-actions .el-button + .el-button {
+  margin-left: 0;
+}
+
+.row-actions .el-button .el-icon {
+  margin-right: 2px;
+}
+
+/* ---- 分页条 ---- */
+.admin-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-paper);
+}
+
+.admin-pager__info {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* ---- 响应式 ---- */
+@media (max-width: 768px) {
+  .admin-head {
+    flex-wrap: wrap;
+  }
+
+  .admin-head__actions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .admin-head__actions .el-button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .admin-pager {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-pager .el-pagination {
+    justify-content: center;
+  }
+}
